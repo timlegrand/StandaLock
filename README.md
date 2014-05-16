@@ -9,6 +9,7 @@ Wondering about privacy and [spambot harvesting](http://en.wikipedia.org/wiki/Em
 2. The only way to know if the visitor is not a bot is making him proving is human.
 3. GUI-based actions (like reading a Captcha, picking an object of a certain kind or drawing a sheep) have the best results since no spambot can afford the needed computing power in a reasonnable time for brute force attacks.
 4. Slidelocks are a simple, user-friendly, device-agnostic way to do it compared to Captchas which require text input, focus, and multiple retries to get it unlocked.
+
 In addition, this countermeasure supports clickable email links (which cannot be done with HTML offuscation, for example).
 
 Why standalone?
@@ -22,6 +23,7 @@ document.getElementById('my_contact_div').innerHTML = '<p>' + my_email + '</p>';
 will not work either since the spambot can clearly read the line `my_email = "personal@example.com";`.
 7. Embedding encrypted PI and decrypting it with Javascript at render time is useless since the rendered web page read by spambots  will contain clear PI.
 8. So solution is to decrypt and render PI only if visitor is human, that is, if he manually unlocked the slide lock via GUI.
+
 This solution is in **pure Javascript**, so no communication with server is required:
 * runs well on static servers such as Jekyll
 * don't wait for the server to respond, get unlocked information instantly!
