@@ -33,6 +33,7 @@ This solution is in **pure Javascript**, so no communication with server is requ
 
 License
 -------
+This software (graphics artwork included) is provided under the MIT license. Please read LICENSE file for further information.
 The canvas implementation is based on Red Hammond HTML5 canvas works you can find on [his GitHub page](https://github.com/rheh/HTML5-canvas-projects/tree/master/progress). A detailed explanation of the HTML5 canvas construction of his original slidebar can be found [here](http://geeksretreat.wordpress.com/2012/08/13/a-progress-bar-using-html5s-canvas/). 
-Full credit for the original digital image goes [here](http://365psd.com/day/106/) for source the PSD (this version is modified).
+Full credit for the original digital image goes [here](http://365psd.com/day/106/) for source the PSD (this version was modified).
 
