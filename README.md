@@ -16,11 +16,11 @@ Why standalone?
 ---------------
   5. It turns out that every slidelock found on the web is based on the client-server model with various handshakes that end with retreval of PI from the server. But what if you cannot ask the server? What if the server cannot run PHP or Python? Today many websites are static-pages servers (Harp, Jekyll, etc.) as for GitHub.io. In these cases such slidelocks don't work.
   6. Spambot can read Javascipt text scripts. So embedding a
-  ```javascript
-  my_email = "personal@example.com";
-  document.getElementById('my_contact_div').innerHTML = '<p>' + my_email + '</p>';
-  ```
-  will not work either since the spambot can clearly read the line `my_email = "personal@example.com";`.
+    ```javascript
+    my_email = "personal@example.com";
+    document.getElementById('my_contact_div').innerHTML = '<p>' + my_email + '</p>';
+    ```
+    will not work either since the spambot can clearly read the line `my_email = "personal@example.com";`.
   7. Embedding encrypted PI and decrypting it with Javascript at render time is useless since the rendered web page read by spambots  will contain clear PI.
   8. So solution is to decrypt and render PI only if visitor is human, that is, if he manually unlocked the slide lock via GUI.
 
