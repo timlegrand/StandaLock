@@ -58,7 +58,7 @@ function securedAction() {
     document.getElementById('contact').innerHTML = insertion;
 }
 ```
-Don't forget that **automatically calling *securedAction()* is *not* secure**. You should always make sure your visitor is human before *securedAction()* is performed, that is, he had unlock the slider.
+Don't forget that **automatically calling *securedAction()* is *not* secure**. You should always make sure your visitor is human before *securedAction()* is performed, that is, he had unlock the slider, and this is the precise purpose of this software.
 
 License
 -------
