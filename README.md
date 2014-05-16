@@ -31,6 +31,34 @@ This solution is in **pure Javascript**, so no communication with server is requ
 * still runs if you loose network connection on your mobile,
 * don't wait for the server to respond, get unlocked information instantly!
 
+How it works?
+---------------
+All you need to do is editing the securedAction() function in thee standalock.js file.
+Here is an implementation provided as an example:
+```javascript
+function securedAction() {
+
+    // 1- Store encrypted info, e.g. here just the Base64 encoding
+    // of an email address [obtainded with window.btoa()]
+    var bm = "cHJpdmF0ZUBleGFtcGxlLmNvbQ==";
+    var bp = "MSg1NTUpNTU1LTU1NTU=";
+
+    // 2- Implement your own 'decrypt' function here
+    function decrypt(encrypted_msg) {
+        decrypted_msg = window.atob(encrypted_msg);
+        return decrypted_msg;
+    }
+
+    // 3- Safely insert sensible information in your HTML document
+    insertion  = '<p>';
+    insertion += '<a href="mailto:' + decrypt(bm) + '">' + decrypt(bm) + '</a>';
+    insertion += '&nbsp;&nbsp;|&nbsp;&nbsp;';
+    insertion += '<a href="tel:' + decrypt(bp) + '">' + decrypt(bp) + '</a>';
+    insertion += '</p>';
+    document.getElementById('contact').innerHTML = insertion;
+}
+```
+
 License
 -------
 This software (graphics artwork included) is provided under the MIT license. Please read LICENSE file for further information.
