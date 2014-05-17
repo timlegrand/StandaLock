@@ -39,11 +39,13 @@ How it works?
 <div id="contact"></div>
 <script type="text/javascript">init();</script>
 ```
+
      Where "contact" is the div that will contain your personal information.
      Don't forget to add
 ```html
 <script src="/path/to/standalock.js"></script>
 ```
+
      in the header section of your HTML.
   2. Edit the securedAction() function in thee ```standalock.js``` file.
 Here is an implementation provided as an example:
