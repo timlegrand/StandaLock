@@ -33,7 +33,7 @@ This solution is in **pure Javascript**, so no communication with server is requ
 
 How it works?
 ---------------
-  1. Add those three lines in your HTML:
+  1. Add this in your HTML:
      ```html
      <canvas id="progress" width="469" height="69" style="cursor: pointer;"></canvas>
      <div id="contact"></div>
