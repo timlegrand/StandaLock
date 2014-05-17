@@ -1,9 +1,13 @@
 StandaLock
 ==========
 A standalone slide bar that users unlock with a _drag and drop_ to prevent spambots for harvesting sensitive, private information stored in your web pages such as email address and phone number.
-<center>
+
+{:.center}
 ![StandaLock in action](http://timlegrand.github.io/assets/images/StandaLock.gif)
-</center>
+
+.center {
+  text-align: center;
+}
 
 Why a slidelock?
 ---------------
