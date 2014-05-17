@@ -40,8 +40,8 @@ How it works?
 <script type="text/javascript">init();</script>
 ```
 
-     Where "contact" is the div that will contain your personal information.
-     Don't forget to add
+Where "contact" is the div that will contain your personal information.
+Don't forget to add
 ```html
 <script src="/path/to/standalock.js"></script>
 ```
