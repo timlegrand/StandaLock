@@ -4,7 +4,7 @@ A standalone slide bar that users unlock with a _drag and drop_ to prevent spamb
 
 {{ center }}
 ![StandaLock in action](http://timlegrand.github.io/assets/images/StandaLock.gif)
-
+{{ endcenter }}
 
 Why a slidelock?
 ---------------
