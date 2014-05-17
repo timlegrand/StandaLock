@@ -41,6 +41,7 @@ How it works?
      <script type="text/javascript">init();</script>
      ```
      Where "contact" is the div that will contain your personal information.
+     
   2. Edit the securedAction() function in thee ```standalock.js``` file.
      Here is an implementation provided as an example:
      ```javascript
