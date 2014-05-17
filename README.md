@@ -45,6 +45,7 @@ Don't forget to add
 <script src="/path/to/standalock.js"></script>
 ```
 in the header section of your HTML.
+
   2. Edit the securedAction() function in thee ```standalock.js``` file.
 Here is an implementation provided as an example:
 ```javascript
