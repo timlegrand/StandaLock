@@ -33,7 +33,19 @@ This solution is in **pure Javascript**, so no communication with server is requ
 
 How it works?
 ---------------
-All you need to do is editing the securedAction() function in thee standalock.js file.
+  1. Add those three lines in your HTML:
+```html
+<canvas id="progress" width="469" height="69" style="cursor: pointer;"></canvas>
+<div id="contact"></div>
+<script type="text/javascript">init();</script>
+```
+    Where "contact" is the div that will contain your personal information.
+    Don't forget to add
+```html
+<script src="/path/to/standalock.js"></script>
+```
+    in the header section of your HTML.
+  2. Edit the securedAction() function in thee ```standalock.js``` file.
 Here is an implementation provided as an example:
 ```javascript
 function securedAction() {
@@ -58,7 +70,7 @@ function securedAction() {
     document.getElementById('contact').innerHTML = insertion;
 }
 ```
-Don't forget that **automatically calling *securedAction()* is *not* secure**. You should always make sure your visitor is human before *securedAction()* is performed, that is, he had unlock the slider, and this is the precise purpose of this software.
+Don't forget that **automatically calling *securedAction()* is *not* secure**. You should always make sure your visitor is human before *securedAction()* is performed, that is, he had unlocked the slider, and this is the precise purpose of this software.
 
 License
 -------
