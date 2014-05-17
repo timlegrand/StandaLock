@@ -41,8 +41,8 @@ How it works?
      <script type="text/javascript">init();</script>
      ```
      Where "contact" is the div that will contain your personal information.
-     
-  2. Edit the securedAction() function in thee ```standalock.js``` file.
+
+  2. Edit the ```securedAction()``` function in thee ```standalock.js``` file.
      Here is an implementation provided as an example:
      ```javascript
      function securedAction() {
@@ -67,7 +67,7 @@ How it works?
          document.getElementById('contact').innerHTML = insertion;
      }
      ```
-     Don't forget that **automatically calling *securedAction()* is *not* secure**. You should always make sure your visitor is human before *securedAction()* is performed, that is, he had unlocked the slider, and this is the precise purpose of this software.
+     Don't forget that **automatically calling *securedAction()* **on page load, for example,** is *not* secure**. You should always make sure your visitor is human before *securedAction()* is performed, that is, he had unlocked the slider, and this is the precise purpose of this software.
 
 License
 -------
