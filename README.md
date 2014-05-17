@@ -18,11 +18,11 @@ Why standalone?
   5. It turns out that every slidelock found on the web is based on the client-server model with various handshakes that end with retreval of PI from the server. But what if you cannot ask the server? What if the server cannot run PHP or Python? Today many websites are static-pages servers (Harp, Jekyll, etc.) as for GitHub.io. In these cases such slidelocks don't work.
   6. Spambots can read Javascipt text scripts. So embedding a
 
-    ```javascript
-    my_email = "personal@example.com";
-    document.getElementById('my_contact_div').innerHTML = '<p>' + my_email + '</p>';
-    ```
-    will not work either since the spambot can clearly read the line `my_email = "personal@example.com";`.
+     ```javascript
+     my_email = "personal@example.com";
+     document.getElementById('my_contact_div').innerHTML = '<p>' + my_email + '</p>';
+     ```
+     will not work either since the spambot can clearly read the line `my_email = "personal@example.com";`.
   7. Embedding encrypted PI and decrypting it with Javascript at render time is useless since the rendered web page read by spambots  will contain clear PI.
   8. So solution is to decrypt and render PI only if visitor is human, that is, if he manually unlocked the slide lock via GUI.
 
@@ -34,44 +34,44 @@ This solution is in **pure Javascript**, so no communication with server is requ
 How it works?
 ---------------
   1. Add those three lines in your HTML:
-```html
-<canvas id="progress" width="469" height="69" style="cursor: pointer;"></canvas>
-<div id="contact"></div>
-<script type="text/javascript">init();</script>
-```
-Where "contact" is the div that will contain your personal information.
-Don't forget to add
-```html
-<script src="/path/to/standalock.js"></script>
-```
-in the header section of your HTML.
+     ```html
+     <canvas id="progress" width="469" height="69" style="cursor: pointer;"></canvas>
+     <div id="contact"></div>
+     <script src="/path/to/standalock.js"></script>
+     <script type="text/javascript">init();</script>
+     ```
+     Where "contact" is the div that will contain your personal information.
+     Don't forget to add
+     ```html
+     ```
+     in the header section of your HTML.
 
   2. Edit the securedAction() function in thee ```standalock.js``` file.
-Here is an implementation provided as an example:
-```javascript
-function securedAction() {
-
-    // 1- Store encrypted info, e.g. here just the Base64 encoding
-    // of an email address [obtainded with window.btoa()]
-    var bm = "cHJpdmF0ZUBleGFtcGxlLmNvbQ==";
-    var bp = "MSg1NTUpNTU1LTU1NTU=";
-
-    // 2- Implement your own 'decrypt' function here
-    function decrypt(encrypted_msg) {
-        decrypted_msg = window.atob(encrypted_msg);
-        return decrypted_msg;
-    }
-
-    // 3- Safely insert sensible information in your HTML document
-    insertion  = '<p>';
-    insertion += '<a href="mailto:' + decrypt(bm) + '">' + decrypt(bm) + '</a>';
-    insertion += '&nbsp;&nbsp;|&nbsp;&nbsp;';
-    insertion += '<a href="tel:' + decrypt(bp) + '">' + decrypt(bp) + '</a>';
-    insertion += '</p>';
-    document.getElementById('contact').innerHTML = insertion;
-}
-```
-Don't forget that **automatically calling *securedAction()* is *not* secure**. You should always make sure your visitor is human before *securedAction()* is performed, that is, he had unlocked the slider, and this is the precise purpose of this software.
+     Here is an implementation provided as an example:
+     ```javascript
+     function securedAction() {
+     
+         // 1- Store encrypted info, e.g. here just the Base64 encoding
+         // of an email address [obtainded with window.btoa()]
+         var bm = "cHJpdmF0ZUBleGFtcGxlLmNvbQ==";
+         var bp = "MSg1NTUpNTU1LTU1NTU=";
+     
+         // 2- Implement your own 'decrypt' function here
+         function decrypt(encrypted_msg) {
+             decrypted_msg = window.atob(encrypted_msg);
+             return decrypted_msg;
+         }
+     
+         // 3- Safely insert sensible information in your HTML document
+         insertion  = '<p>';
+         insertion += '<a href="mailto:' + decrypt(bm) + '">' + decrypt(bm) + '</a>';
+         insertion += '&nbsp;&nbsp;|&nbsp;&nbsp;';
+         insertion += '<a href="tel:' + decrypt(bp) + '">' + decrypt(bp) + '</a>';
+         insertion += '</p>';
+         document.getElementById('contact').innerHTML = insertion;
+     }
+     ```
+     Don't forget that **automatically calling *securedAction()* is *not* secure**. You should always make sure your visitor is human before *securedAction()* is performed, that is, he had unlocked the slider, and this is the precise purpose of this software.
 
 License
 -------
