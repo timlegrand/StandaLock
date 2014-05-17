@@ -1,6 +1,6 @@
 StandaLock
 ==========
-A standalone slide bar to be unlocked manually by user to prevent spambots for harvesting sensitive, private information stored in your web pages such as email address and phone number.
+A standalone slide bar that users unlock with a _drag and drop_ to prevent spambots for harvesting sensitive, private information stored in your web pages such as email address and phone number.
 
 Why a slidelock?
 ---------------
