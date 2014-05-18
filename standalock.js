@@ -195,3 +195,10 @@ function securedAction() {
     insertion += '</p>';
     document.getElementById('contact').innerHTML = insertion;
 }
+
+//////////////////////////////////
+//// Auto-init on script load ////
+if (document.getElementById('contact')) {
+    init();
+}
+//////////////////////////////////

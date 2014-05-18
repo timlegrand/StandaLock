@@ -1,8 +1,8 @@
 StandaLock
 ==========
-A standalone slide bar that users unlock with a _drag and drop_ to prevent spambots for harvesting sensitive, private information stored in your web pages such as email address and phone number.
+A standalone slide bar that your visitors unlock using _drag and drop_ to prevent spambots for harvesting sensitive, private information stored in your web pages such as email address and phone number.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![StandaLock in action](http://timlegrand.github.io/assets/images/StandaLock.gif)
+![StandaLock in action](http://timlegrand.github.io/assets/images/StandaLock.gif)
 
 
 Why a slidelock?
@@ -30,7 +30,7 @@ Why standalone?
   8. So solution is to decrypt and render PI only if visitor is human, that is, if he manually unlocked the slide lock via GUI.
 
 This solution is in **pure Javascript**, so no communication with server is required:
-* runs well on static servers such as Jekyll,
+* runs on static websites such as Jekyll servers,
 * still runs if you loose network connection on your mobile,
 * don't wait for the server to respond, get unlocked information instantly!
 
@@ -41,7 +41,6 @@ How it works?
      <canvas id="progress" width="469" height="69" style="cursor: pointer;"></canvas>
      <div id="contact"></div>
      <script src="/path/to/standalock.js"></script>
-     <script type="text/javascript">init();</script>
      ```
      Where "contact" is the div that will contain your personal information.
 
