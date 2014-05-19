@@ -187,7 +187,7 @@ function securedAction() {
         return decrypted_msg;
     }
 
-    // 3- Safely insert sensible information in your HTML document
+    // 3- Safely insert sensitive information in your HTML document
     insertion  = '<p>';
     insertion += '<a href="mailto:' + decrypt(bm) + '">' + decrypt(bm) + '</a>';
     insertion += '&nbsp;&nbsp;|&nbsp;&nbsp;';

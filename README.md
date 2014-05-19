@@ -11,22 +11,22 @@ Wondering about privacy and [spambot harvesting](http://en.wikipedia.org/wiki/Em
 A short resume of the state of the art could be:
   1. Spambots read HTML, so do not write PI in your web pages.
   2. The only way to know if the visitor is not a bot is making him proving is human.
-  3. GUI-based actions (like reading a Captcha, picking an object of a certain kind or drawing a sheep) have the best results since no spambot can afford the needed computing power in a reasonnable time for brute force attacks.
+  3. GUI-based actions (like reading a Captcha, listing to audio, picking an object of a certain kind or drawing a sheep) have the best results since no spambot can afford the computing power needed to process such inputs in a reasonnable time for brute force attacks.
   4. Slidelocks are a simple, user-friendly, device-agnostic way to do it compared to Captchas which require text input, focus, and multiple retries to get it unlocked.
 
-In addition, this countermeasure supports clickable email links (which cannot be done with HTML offuscation, for example).
+In addition, these countermeasures support clickable email links (which cannot be done with HTML offuscation, for example).
 
 Why standalone?
 ---------------
-  5. It turns out that every slidelock found on the web is based on the client-server model with various handshakes that end with retreval of PI from the server. But what if you cannot ask the server? What if the server cannot run PHP or Python? Today many websites are static-pages servers (Harp, Jekyll, etc.) as for GitHub.io. In these cases such slidelocks don't work.
-  6. Spambots can read Javascipt text scripts. So embedding a
+  5. It turns out that every slidelock found on the web is based on a client-server model implying various handshakes that end with the retrieval of PI from the server. But what if you cannot ask the server? What if the server cannot run PHP or Python? Today many websites are static-pages servers (Harp, Jekyll, etc.) as for GitHub.io. In these cases such slidelocks won't work.
+  6. Spambots can read Javascipt. So writing
 
      ```javascript
      my_email = "personal@example.com";
      document.getElementById('my_contact_div').innerHTML = '<p>' + my_email + '</p>';
      ```
      will not work either since the spambot can clearly read the line `my_email = "personal@example.com";`.
-  7. Embedding encrypted PI and decrypting it with Javascript at render time is useless since the rendered web page read by spambots  will contain clear PI.
+  7. Embedding encrypted PI and decrypting it with Javascript at render time is useless since the rendered web page read by spambots will contain clear PI.
   8. So solution is to decrypt and render PI only if visitor is human, that is, if he manually unlocked the slide lock via GUI.
 
 This solution is in **pure Javascript**, so no communication with server is required:
@@ -36,21 +36,22 @@ This solution is in **pure Javascript**, so no communication with server is requ
 
 How it works?
 ---------------
-  1. Add this in your HTML:
+  1. Download [the zip archive](https://github.com/timlegrand/StandaLock/archive/master.zip) then uncompress in your website folder.
+  2. Add this in your HTML:
      ```html
      <canvas id="progress" width="469" height="69" style="cursor: pointer;"></canvas>
      <div id="contact"></div>
      <script src="/path/to/standalock.js"></script>
      ```
-     Where "contact" is the div that will contain your personal information.
+     Where "contact" is the div that will contain your personal information. If you need to give another name to this div, make sure you change the JavaScript accordingly (see below).
 
-  2. Edit the ```securedAction()``` function in thee ```standalock.js``` file.
+  3. Edit the ```securedAction()``` function in the ```standalock.js``` file.
      Here is an implementation provided as an example:
      ```javascript
      function securedAction() {
      
          // 1- Store encrypted info, e.g. here just the Base64 encoding
-         // of an email address [obtainded with window.btoa()]
+         // of an email address and phone [obtainded with window.btoa()]
          var bm = "cHJpdmF0ZUBleGFtcGxlLmNvbQ==";
          var bp = "MSg1NTUpNTU1LTU1NTU=";
      
@@ -60,7 +61,7 @@ How it works?
              return decrypted_msg;
          }
      
-         // 3- Safely insert sensible information in your HTML document
+         // 3- Safely insert sensitive information in your HTML document
          insertion  = '<p>';
          insertion += '<a href="mailto:' + decrypt(bm) + '">' + decrypt(bm) + '</a>';
          insertion += '&nbsp;&nbsp;|&nbsp;&nbsp;';
