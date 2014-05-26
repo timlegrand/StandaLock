@@ -24,11 +24,14 @@ slider_value = 0.0; // represents percentage
 cursor_catched = false;
 passed = false; // prevents from running secured actions multiple times
 
+vault = {}; // Personal Information encrypted vault
+userDecryptFunc = null; // Decryption function
+outputDiv = 'contact'; // Default output <div>
+
 
 function drawBase(ctx) {
 
     ctx.drawImage(img, 0, 0, iWIDTH, iHEIGHT, 0, 0, iWIDTH, iHEIGHT);
-
 }
 
 function drawProgress(ctx) {
@@ -62,7 +65,6 @@ function drawImage() {
 
     // Draw the progress segment level
     drawProgress(ctx);
-
 }
 
 // Returns mouse position relatively to slidebar
@@ -75,7 +77,13 @@ function getMousePos(canvas, evt) {
     };
 }
 
-function init() {
+function insertStandaLock(standaDiv) {
+
+    insertion  = '<p>Slide to unlock contact info</p>';
+    insertion += '<canvas id="progress" width="' + iWIDTH + '" height="' + iHEIGHT + '" style="cursor: pointer;"></canvas>';
+    // default global div for text and canvas is called 'standalock':
+    if(typeof(standaDiv)==='undefined') standaDiv = 'standalock'; 
+    document.getElementById(standaDiv).innerHTML = insertion;
 
     canvas = document.getElementById('progress');
 
@@ -108,9 +116,9 @@ function init() {
                 cursor_catched = true;
             }
             
-            // In standard cursors, the mouse used to catch the cursors anywhere
+            // In standard cursors, the mouse used to catch the cursor anywhere
             // it is as soon as you click on the bar.
-            // If you want to get the same behavior as standard cursors, 
+            // If you want to get the same behavior as these standard cursors, 
             // just replace the conditional block above by the one following.
             // if  ((mousePos.x >= 0) && (mousePos.x <= w)){
             //     cursor_catched = true;
@@ -174,31 +182,72 @@ function init() {
     }
 }
 
+function registerPI(key, value) {
+    
+    vault[key] = value; 
+}
+
+function registerDecryptFunc(func) {
+
+    userDecryptFunc = func;
+}
+
+function decrypt(key) {
+    if (!(key in vault)) throw "StandaLock: Personal information '" + key + "' not found";
+    if (userDecryptFunc === null) throw "StandaLock: Missing decrypt function.";
+
+    encrypted_msg = vault[key];
+    decrypted_msg = userDecryptFunc(encrypted_msg);
+    return decrypted_msg;
+}
+
+function bindOutputDiv(divName) {
+
+    if (divName) {
+        outputDiv = divName;
+    }
+}
+
+function printPI() {
+
+    out = document.getElementById(outputDiv);
+    if (!out) throw "StandaLock: Output div '" + outputDiv + "' not found.";
+
+    insertion  = '<p>';
+    insertion += '<a href="mailto:' + decrypt('mail') + '">' + decrypt('mail') + '</a>';
+    insertion += '&nbsp;&nbsp;|&nbsp;&nbsp;';
+    insertion += '<a href="tel:' + decrypt('phone') + '">' + decrypt('phone') + '</a>';
+    insertion += '</p>';
+    out.innerHTML = insertion;
+}
+
 function securedAction() {
+
+    // 3- Safely insert sensitive information in your HTML document
+    printPI();
+}
+
+function init() {
 
     // 1- Store encrypted info, e.g. here just the Base64 encoding
     // of an email address [obtainded with window.btoa()]
-    var bm = "cHJpdmF0ZUBleGFtcGxlLmNvbQ==";
-    var bp = "MSg1NTUpNTU1LTU1NTU=";
+    registerPI('mail', "cHJpdmF0ZUBleGFtcGxlLmNvbQ==");
+    registerPI('phone', "MSg1NTUpNTU1LTU1NTU=");
 
-    // 2- Implement your own 'decrypt' function here
-    function decrypt(encrypted_msg) {
+    // 2- Register your own 'decrypt' function here
+    myDecryptFunc = function (encrypted_msg) {
         decrypted_msg = window.atob(encrypted_msg);
         return decrypted_msg;
     }
+    registerDecryptFunc(myDecryptFunc);
 
-    // 3- Safely insert sensitive information in your HTML document
-    insertion  = '<p>';
-    insertion += '<a href="mailto:' + decrypt(bm) + '">' + decrypt(bm) + '</a>';
-    insertion += '&nbsp;&nbsp;|&nbsp;&nbsp;';
-    insertion += '<a href="tel:' + decrypt(bp) + '">' + decrypt(bp) + '</a>';
-    insertion += '</p>';
-    document.getElementById('contact').innerHTML = insertion;
+    // 3- Bind to your own output div
+    bindOutputDiv('contact'); // optional since default is already 'contact'
+
+    insertStandaLock();
 }
 
 //////////////////////////////////
 //// Auto-init on script load ////
-if (document.getElementById('contact')) {
-    init();
-}
+document.addEventListener('DOMContentLoaded', init, false);
 //////////////////////////////////

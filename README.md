@@ -39,35 +39,39 @@ How it works?
   1. Download [the zip archive](https://github.com/timlegrand/StandaLock/archive/master.zip) then uncompress in your website folder.
   2. Add this in your HTML:
      ```html
-     <canvas id="progress" width="469" height="69" style="cursor: pointer;"></canvas>
+     <div id="standalock"></div>
      <div id="contact"></div>
+     ```
+     Where "contact" is the div that will contain your personal information. If you need to give another name to this div, make sure you bind the StandaLock accordingly (see below). You can put the "standalock" away from the "contact" div if you want, it will still work.
+     Don't forget to add
+     ```html
      <script src="/path/to/standalock.js"></script>
      ```
-     Where "contact" is the div that will contain your personal information. If you need to give another name to this div, make sure you change the JavaScript accordingly (see below).
+     in the header (of footer, both ways work) of your page.
 
-  3. Edit the ```securedAction()``` function in the ```standalock.js``` file.
+  2. Encrypt your personal information and prepare to provide a decrypt function.
+
+  3. Edit the ```init()``` function in the ```standalock.js``` file.
      Here is an implementation provided as an example:
      ```javascript
-     function securedAction() {
+     function init() {
      
-         // 1- Store encrypted info, e.g. here just the Base64 encoding
-         // of an email address and phone [obtainded with window.btoa()]
-         var bm = "cHJpdmF0ZUBleGFtcGxlLmNvbQ==";
-         var bp = "MSg1NTUpNTU1LTU1NTU=";
-     
-         // 2- Implement your own 'decrypt' function here
-         function decrypt(encrypted_msg) {
-             decrypted_msg = window.atob(encrypted_msg);
-             return decrypted_msg;
-         }
-     
-         // 3- Safely insert sensitive information in your HTML document
-         insertion  = '<p>';
-         insertion += '<a href="mailto:' + decrypt(bm) + '">' + decrypt(bm) + '</a>';
-         insertion += '&nbsp;&nbsp;|&nbsp;&nbsp;';
-         insertion += '<a href="tel:' + decrypt(bp) + '">' + decrypt(bp) + '</a>';
-         insertion += '</p>';
-         document.getElementById('contact').innerHTML = insertion;
+        // 1- Store encrypted info, e.g. here just the Base64 encoding
+        // of an email address [obtainded with window.btoa()]
+        registerPI('mail', "cHJpdmF0ZUBleGFtcGxlLmNvbQ==");
+        registerPI('phone', "MSg1NTUpNTU1LTU1NTU=");
+
+        // 2- Register your own 'decrypt' function here
+        myDecryptFunc = function (encrypted_msg) {
+            decrypted_msg = window.atob(encrypted_msg);
+            return decrypted_msg;
+        }
+        registerDecryptFunc(myDecryptFunc);
+
+        // 3- Bind to your own output div
+        bindOutputDiv('contact'); // optional since default is already 'contact'
+
+        insertStandaLock();
      }
      ```
      Don't forget that automatically calling ```securedAction()``` on page load, for example, is **not** secure. You should always make sure your visitor is human before *securedAction()* is performed, that is, he had unlocked the slider, and this is the precise purpose of this software.
@@ -76,5 +80,5 @@ License
 -------
 This software (graphics artwork included) is provided under the MIT license. Please read LICENSE file for further information.
 The canvas implementation is based on Red Hammond HTML5 canvas works you can find on [his GitHub page](https://github.com/rheh/HTML5-canvas-projects/tree/master/progress). A detailed explanation of the HTML5 canvas construction of his original slidebar can be found [here](http://geeksretreat.wordpress.com/2012/08/13/a-progress-bar-using-html5s-canvas/). 
-Full credit for the original digital image goes [here](http://365psd.com/day/106/) for source the PSD (this version was modified).
+Full credit for the original digital image goes [here](http://365psd.com/day/106/) (this version was a bit modified).
 
