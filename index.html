@@ -5,16 +5,57 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta charset="utf-8">
 		<title>HTML5 Progress Slider</title>
-		<script src="./standalock.js"></script>
 		<script src="./webfont.js" type="text/javascript" async=""></script>
+		<style>
+		section {
+			text-align: center;
+		}
+		</style>
 	</head>
-	<body onload="init();">
-		<center>
-		<div id="standalock">
+	<body>
+		<section>
 			<p>Slide to unlock contact info</p>
 			<canvas id="progress" width="469" height="69" style="cursor: pointer;"></canvas>
-		</div>
-		<div id="contact"></div>
-	</center>
+			<div id="contact"></div>
+		<section>
+		</section>
+			<p>Are you a human? Slide to unlock button</p>
+			<canvas id="canvas" width="469" height="69" style="cursor: pointer;"></canvas>
+			<div id="button"></div>
+		</section>
+	<script src="./standalock.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		window.addEventListener('load', function(){
+			var config1 = {
+				placeholder: '#contact',
+				renderer: '#progress',
+				data: {
+					mailto: 'cHJpdmF0ZUBleGFtcGxlLmNvbQ==',
+					tel: 'MSg1NTUpNTU1LTU1NTU='
+				},
+				decrypt: function(value) {
+			    return window.atob(value);
+			  },
+				template: '<p><a href="mailto:{{mailto}}">{{mailto}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="tel:{{tel}}">{{tel}}</a></p>'
+			};
+			var config2 = {
+				placeholder: '#button',
+				renderer: '#canvas',
+				template: '<p><button onclick="alert(\'DONE\')">Click me</button></p>'
+			}
+			var config3 = {
+				placeholder: '#contact2',
+				renderer: '#progress2',
+				data: {
+					mailto: "+-$1{/ Z 3{(+' H}*(", // caeser cipher with 26 shift
+					tel: 'KBOOOCOOOGOOOO' // caeser cipher with 26 shift
+				},
+				decryptUrl: 'http://some-url.com/decrypt',
+				template: '<p><a href="mailto:{{mailto}}">{{mailto}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="tel:{{tel}}">{{tel}}</a></p>'
+			};
+			new StandLock(config1).render();
+			new StandLock(config2).render();
+		}, false);
+	</script>
 	</body>
 </html>
