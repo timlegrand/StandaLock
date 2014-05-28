@@ -10,10 +10,20 @@ function StandLock(config){
   this.canvas = document.querySelector(config.renderer);
   this.data = config.data;
   this.ctx = this.canvas.getContext('2d');
+
+  // handle clicks
   this.canvas.addEventListener('mousedown', this._onmousedown.bind(this), false);
   this.canvas.addEventListener('mousemove', this._onmousemove.bind(this), false);
   this.canvas.addEventListener('mouseup', this._onmouseup.bind(this), false);
   this.canvas.addEventListener('mouseout', this._onmouseout.bind(this), false);
+
+  // handle touches
+  this.canvas.addEventListener('touchstart', this._onmousedown.bind(this), false);
+  this.canvas.addEventListener('touchmove', this._onmousemove.bind(this), false);
+  this.canvas.addEventListener('touchend', function(){
+    this._onmouseout();
+    this._onmouseup();
+  }.bind(this),false);
 
   // Global state
   this._slider_value = 0.0; // represents percentage
@@ -21,8 +31,8 @@ function StandLock(config){
   this._passed = false; // prevents from running secured actions multiple times
 
   // Graphics-dependant constants
-  this._iHEIGHT = 68; // half-height, one bar only
   this._iWIDTH = 469;
+  this._iHEIGHT = 68; // half-height, one bar only
   this._cursor_radius = 13;
   this._x1 = 114 + (this._cursor_radius-1); // X position where the progress segment starts
   this._x2 = 445 - (this._cursor_radius-1); // X position where the progress segment ends
@@ -86,7 +96,12 @@ StandLock.prototype._drawProgress = function() {
 
 // Returns mouse position relatively to slidebar
 StandLock.prototype._getMousePos = function(evt) {
+  console.log(evt);
   var rect = this.canvas.getBoundingClientRect();
+  if (evt.targetTouches){
+    evt.clientX = evt.targetTouches[0].pageX;
+    evt.clientY = evt.targetTouches[0].pageY;
+  }
   return {
     x: evt.clientX - rect.left - this._x1,
     y: evt.clientY - rect.top - this._y
@@ -94,6 +109,8 @@ StandLock.prototype._getMousePos = function(evt) {
 }
 
 StandLock.prototype._onmousemove = function(evt) {
+  evt.preventDefault();
+
   if ((this._cursor_catched == false) || (this._passed === true)) {
     return;
   }
