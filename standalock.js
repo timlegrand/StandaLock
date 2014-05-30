@@ -2,7 +2,7 @@
 
 ;(function(win, doc){
 
-  function StandLockClazz(config){
+  function StandaLockClass(config){
 
     this.checkCanvasSupport();
 
@@ -33,7 +33,7 @@
 
   }
 
-  StandLockClazz.prototype.checkCanvasSupport = function(){
+  StandaLockClass.prototype.checkCanvasSupport = function(){
     try {
       document.createElement('canvas').getContext('2d');
     }
@@ -42,7 +42,7 @@
     }
   }
 
-  StandLockClazz.prototype.render = function() {
+  StandaLockClass.prototype.render = function() {
 
     var docfrag = document.createDocumentFragment();
     var p = document.createElement('p');
@@ -74,7 +74,7 @@
 
   }
 
-  StandLockClazz.prototype._bindEvents = function() {
+  StandaLockClass.prototype._bindEvents = function() {
 
     // handle clicks
     this.canvas.addEventListener('mousedown', this._onmousedown.bind(this), false);
@@ -82,7 +82,7 @@
     this.canvas.addEventListener('mouseup', this._onmouseup.bind(this), false);
     this.canvas.addEventListener('mouseout', this._onmouseout.bind(this), false);
 
-    // handle touches
+    // handle touches for mobile devices
     this.canvas.addEventListener('touchstart', this._onmousedown.bind(this), false);
     this.canvas.addEventListener('touchmove', this._onmousemove.bind(this), false);
     this.canvas.addEventListener('touchend', function(){
@@ -92,16 +92,16 @@
 
   };
 
-  StandLockClazz.prototype._draw = function() {
+  StandaLockClass.prototype._draw = function() {
     this._drawBase();
     this._drawProgress();
   }
 
-  StandLockClazz.prototype._drawBase = function() {
+  StandaLockClass.prototype._drawBase = function() {
     this.ctx.drawImage(this.img, 0, 0, this._iWIDTH, this._iHEIGHT, 0, 0, this._iWIDTH, this._iHEIGHT);
   }
 
-  StandLockClazz.prototype._drawProgress = function() {
+  StandaLockClass.prototype._drawProgress = function() {
 
     // Calculated x position where the overalyed image should end
     var x_end = this._x1 + (this._w * this._slider_value) / 100; // relative to slidebar
@@ -126,7 +126,7 @@
   }
 
   // Returns mouse position relatively to slidebar
-  StandLockClazz.prototype._getMousePos = function(evt) {
+  StandaLockClass.prototype._getMousePos = function(evt) {
     var rect = this.canvas.getBoundingClientRect();
     if (evt.targetTouches){
       evt.clientX = evt.targetTouches[0].pageX;
@@ -138,7 +138,7 @@
     };
   }
 
-  StandLockClazz.prototype._onmousemove = function(evt) {
+  StandaLockClass.prototype._onmousemove = function(evt) {
     evt.preventDefault();
 
     if ((this._cursor_catched == false) || (this._passed === true)) {
@@ -165,7 +165,7 @@
     this._draw();
   }
 
-  StandLockClazz.prototype._onmouseup = function(evt) {
+  StandaLockClass.prototype._onmouseup = function(evt) {
     this._cursor_catched = false;
     if (this._passed === true) {
       return false;
@@ -180,7 +180,7 @@
     }
   }
 
-  StandLockClazz.prototype._onmousedown = function(evt) {
+  StandaLockClass.prototype._onmousedown = function(evt) {
     var mousePos = this._getMousePos(evt);
 
     // Click is not on the bar
@@ -208,7 +208,7 @@
     // }
   }
 
-  StandLockClazz.prototype._onmouseout = function(evt) {
+  StandaLockClass.prototype._onmouseout = function(evt) {
     this._cursor_catched = false;
     if (this._passed === true) {
       return false;
@@ -217,7 +217,7 @@
     this._draw();
   }
 
-  StandLockClazz.prototype._unlock = function() {  
+  StandaLockClass.prototype._unlock = function() {  
     var o = {};
     if (!!this.decryptUrl){
       this._decryptFromServer();
@@ -227,14 +227,14 @@
     }
   }
 
-  StandLockClazz.prototype._applyTemplate = function(template, obj){
+  StandaLockClass.prototype._applyTemplate = function(template, obj){
     for(var val in obj){
       template = template.replace(new RegExp('{{'+val+'}}', 'g'), obj[val]);
     }
     this.ouputContainer.innerHTML = template;
   }
 
-  StandLockClazz.prototype._decrypt = function(){
+  StandaLockClass.prototype._decrypt = function(){
     var o = {};
     for(var d in this.data){
       o[d] = this.decryptFn(this.data[d])
@@ -242,7 +242,7 @@
     this._applyTemplate(this.template, o);
   }
 
-  StandLockClazz.prototype._decryptFromServer = function(){
+  StandaLockClass.prototype._decryptFromServer = function(){
     var xhr = new XMLHttpRequest();
     xhr.withCredentials = false;
     xhr.addEventListener('load', function(evt){
@@ -255,9 +255,9 @@
 
   // expose globally
   var _jobs = [];
-  win.StandLock = win.StandLock || {
+  win.StandaLock = win.StandaLock || {
     add: function(config){
-      _jobs.push(new StandLockClazz(config));
+      _jobs.push(new StandaLockClass(config));
       return this;
     },
     render: function(){
