@@ -6,13 +6,21 @@
 
     this.checkCanvasSupport();
 
+    // Mandatory inputs
+    if (!config.placeholder) throw 'Missing placeholder.';
+    if (((!config.decrypt) && (!config.decryptUrl)) && ((!config.template) && (!config.data))) throw 'Missing decrypt method for "' + config.placeholder + '".';
+    if (!config.template) throw 'Missing template for "' + config.placeholder + '".';
+
+    this.placeholder = document.querySelector(config.placeholder);
+    this.placeholderSelector = config.placeholder;
+    this.template = config.template;
+    
+    // Optional inputs
+    this.message = config.message;
+    this.outputContainerSelector = config.outputPlaceholder;
+    this.data = config.data;
     this.decryptFn = config.decrypt;
     this.decryptUrl = config.decryptUrl;
-    this.template = config.template;
-    this.placeholderSelector = config.placeholder;
-    this.placeholder = document.querySelector(config.placeholder);
-    this.data = config.data;
-    this.message = config.message;
 
     // Global state
     this._slider_value = 0.0; // represents percentage
@@ -44,16 +52,16 @@
 
   StandaLockClass.prototype.render = function() {
 
+    // Generate HTML for the lock
     var docfrag = document.createDocumentFragment();
     var p = document.createElement('p');
     this.canvas = document.createElement('canvas');
-    this.ouputContainer = document.createElement('div');
-    
+      
     this.img = new Image();
     this.img.addEventListener('load', this._draw.bind(this), false);
     this.img.src = 'progress-tiles.jpg';
 
-    p.textContent = this.message;
+    p.textContent = this.message + ' for ' + this.placeholderSelector;
 
     this.canvas.width = this._iWIDTH;
     this.canvas.height = this._iHEIGHT;
@@ -63,7 +71,14 @@
 
     docfrag.appendChild(p);
     docfrag.appendChild(this.canvas);
-    docfrag.appendChild(this.ouputContainer);
+
+    if (!this.outputContainerSelector) {
+      this.ouputContainer = document.createElement('div');
+      docfrag.appendChild(this.ouputContainer);
+    }
+    else {
+      this.ouputContainer = document.querySelector(this.outputContainerSelector);
+    }
 
     try{
       this.placeholder.appendChild(docfrag);
@@ -191,21 +206,25 @@
       return false;
     }
 
-    // Slidelock behavior: need to catch the cursor itself to make it move.
-    if ((mousePos.x >= this._sx-20) && (mousePos.x <= this._sx+20)) {
-      this._cursor_catched = true;
-    }
-
     // In standard cursors, the mouse used to catch the cursors anywhere
-    // it is as soon as you click on the bar.
-    // If you want to get the same behavior as standard cursors,
-    // just replace the conditional block above by the one following.
-    // if  ((mousePos.x >= 0) && (mousePos.x <= w)){
-    //     _cursor_catched = true;
-    //     _slider_value = Math.round(mousePos.x / w * 100 * 100) / 100;
-    //     // force redraw so that the cursor is 'catched' by the click
-    //     drawImage(ctx);
-    // }
+    // it is as soon as you click on the bar. If you want to get the same
+    // behavior as standard cursors, just switch by reverting the condition.
+    if (true) {
+      // Slidelock behavior: need to catch the cursor itself to make it move.  
+      if ((mousePos.x >= this._sx-20) && (mousePos.x <= this._sx+20)) {
+        this._cursor_catched = true;
+      }
+    }
+    else {
+      // Standard cursor behavior: cursors goes where mouse clicks
+      if  ((mousePos.x >= 0) && (mousePos.x <= w)){
+        _cursor_catched = true;
+        _slider_value = Math.round(mousePos.x / w * 100 * 100) / 100;
+        // force redraw so that the cursor is 'catched' by the click
+        this._draw();
+      }
+    }
+    
   }
 
   StandaLockClass.prototype._onmouseout = function(evt) {

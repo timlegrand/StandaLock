@@ -1,22 +1,29 @@
 <!DOCTYPE html>
 <!-- saved from url=(0050)http://homepage.ntlworld.com/ray.hammond/progress/ -->
 <html lang="en">
-	<head>
-		<meta name="viewport" content="width=device-width, user-scalable=no">
+  <head>
+    <meta name="viewport" content="width=device-width, user-scalable=no">
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta charset="utf-8">
 		<title>HTML5 Progress Slider</title>
 		<script src="./webfont.js" type="text/javascript" async=""></script>
 		<style>
-		body {
-			text-align: center;
-		}
+			body {
+				text-align: center;
+			}
+			#putdatahere {
+				position: absolute;
+				top: 0px;
+				right: 0px;
+			}
 		</style>
-	</head>
-	<body>
+  </head>
+  <body>
+		<div id="putdatahere">-> Look here when unlocking StandaLock #2 <-</div>
 		<div id="standalock-1"></div>
 		<div id="standalock-2"></div>
 		<div id="standalock-3"></div>
+		<div id="standalock-4"></div>
 		<script src="./standalock.js"></script>
 		<script type="text/javascript" charset="utf-8">
 			function load(){
@@ -33,12 +40,25 @@
 					template: '<p><a href="mailto:{{mailto}}">{{mailto}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="tel:{{tel}}">{{tel}}</a></p>'
 				};
 				var config2 = {
-					message: 'Slide to unlock submit button',
+					message: 'Unlock and look for the output at the corner',
 					placeholder: '#standalock-2',
-					template: '<p><button onclick="alert(\'DONE\')">Click me</button></p>'
-				}
+					outputPlaceholder: '#putdatahere',
+					data: {
+						mailto: 'cHJpdmF0ZUBleGFtcGxlLmNvbQ==',
+						tel: 'MSg1NTUpNTU1LTU1NTU='
+					},
+					decrypt: function(value) {
+				    return window.atob(value);
+				  },
+					template: '<p><a href="mailto:{{mailto}}">{{mailto}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="tel:{{tel}}">{{tel}}</a></p>'
+				};
 				var config3 = {
+					message: 'Slide to unlock a submit button',
 					placeholder: '#standalock-3',
+					template: '<p><button onclick="alert(\'DONE\')">Click me</button></p>'
+				};
+				var config4 = {
+					placeholder: '#standalock-4',
 					message: 'Slide to decrypt from a remote server',
 					data: {
 						mailto: "AC:G2E6o6I2>A=6]4@>", // ROT47
@@ -51,9 +71,10 @@
 					.add(config1)
 					.add(config2)
 					.add(config3)
+					.add(config4)
 					.render();
 			}
 			window.addEventListener('load', load, false);
-		</script>
-	</body>
+	    </script>
+	  </body>
 </html>

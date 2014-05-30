@@ -6,45 +6,43 @@ A standalone slide bar that your visitors unlock using _drag and drop_ to preven
 
 How it works?
 ---------------
-  1. Download [the zip archive](https://github.com/timlegrand/StandaLock/archive/master.zip) then uncompress in your website folder.
-  2. Add this in your HTML:
+  1. Add a placeholder for the StandaLock in your HTML:
      ```html
-     <div id="standalock"></div>
-     <div id="contact"></div>
+     <div id="mystandalock"></div>
      ```
-     Where "contact" is the div that will contain your personal information. If you need to give another name to this div, make sure you bind the StandaLock accordingly (see below). You can put the "standalock" away from the "contact" div if you want, it will still work.
-     Don't forget to add
+     You may also add a div that will contain your personal information when shown (optional):
+     ```html
+     <div id="contact">
+     ```
+  2. Encrypt your personal information and prepare to provide a decrypt function. Remember that we are not fighting against humans, but spambots, which search for particular patterns in clear text in a reasonable time. I personally use Base64 or ROT13 algorithms which are enough for spambots. Remember that your information will never appear in clear text.
+
+  3. Then it's time for StandaLock configuration:
      ```html
      <script src="/path/to/standalock.js"></script>
+     <script type="text/javascript" charset="utf-8">
+      function load(){
+        var config1 = {
+          message: 'Slide to unlock contact info',
+          placeholder: '#mystandalock',
+          data: {
+            mailto: 'cHJpdmF0ZUBleGFtcGxlLmNvbQ==',
+            tel: 'MSg1NTUpNTU1LTU1NTU='
+          },
+          decrypt: function(value) {
+            // my own decrypt function:
+            return window.atob(value);
+          },
+          template: '<p>mail:{{mailto}} tel:{{tel}}</p>'
+        };
+        StandaLock
+          .add(config1)
+          .render();
+      }
+      window.addEventListener('load', load, false);
+      </script>
      ```
      in the header (or footer, both ways work).
-
-  2. Encrypt your personal information and prepare to provide a decrypt function.
-
-  3. Edit the ```init()``` function in the ```standalock.js``` file.
-     Here is an implementation provided as an example:
-     ```javascript
-     function init() {
-     
-        // 1- Store encrypted info, e.g. here just the Base64 encoding
-        // of an email address [obtainded with window.btoa()]
-        registerPI('mail', "cHJpdmF0ZUBleGFtcGxlLmNvbQ==");
-        registerPI('phone', "MSg1NTUpNTU1LTU1NTU=");
-
-        // 2- Register your own 'decrypt' function here
-        myDecryptFunc = function (encrypted_msg) {
-            decrypted_msg = window.atob(encrypted_msg);
-            return decrypted_msg;
-        }
-        registerDecryptFunc(myDecryptFunc);
-
-        // 3- Bind to your own output div
-        bindOutputDiv('contact'); // optional since default is already 'contact'
-
-        insertStandaLock();
-     }
-     ```
-     Don't forget that automatically calling ```securedAction()``` on page load, for example, is **not** secure. You should always make sure your visitor is human before *securedAction()* is performed, that is, he had unlocked the slider, and this is the precise purpose of this software.
+     Please have a look on the [documentation]()
 
 Why a slidelock?
 ---------------
@@ -75,9 +73,179 @@ This solution is in **pure Javascript**, so no communication with server is requ
 * still runs if you loose network connection on your mobile,
 * don't wait for the server to respond, get unlocked information instantly!
 
+Documentation
+-------------
+
+### The API
+
+  The new api has two methods only.
+
+#### ```StandaLock.add(Object: config)```
+
+This method adds a new Standalock configuration to the jobs queue. This method is chainable.
+
+#### ```StandaLock.render()``` 
+
+This method renders all the queued jobs.
+
+### The configuration object
+
+The ```config```object accepts the following attributes:
+  * ```String: placeholder```: the CSS selector for the placeholder where the StandaLock canvas will be rendered. For example : '#mylockhere';
+  * ```String: message```: A message that will be printed to the user prior to the StandaLock;
+  * ```Object: data (optional)```: An associative array (key/value hash) containing the encrypted user's data;
+  * ```Function: decrypt (optional)```: A function that is used to decrypt the user's data. This attributes is mandatory if the ```data```object was provided;
+  * ```String: decryptUrl (optional)```: An url of a remote script that encapsulates the decryption algorithm. This attributes is mandatory if the ```data```object was provided with no ```decrypt``` function. Please note that if both the ```decrypt```function and the ```decryptUrl```are provided, only the ```decryptUrl``` will be used;
+  * ```String: template```: An HTML template that will be showed after the unlock process has succeded. 
+  In order to print out the decrypted value form the provided ```data``` attribute, use the ```{{key}}```syntaxe inside the template;
+  * ```String: outputPlaceholder (optional)```: the CSS selector for the placeholder where the decrypted data will be printed. For example : '#myphonehere'.
+
+### Testing
+
+  We added a ```server.js``` script to demonstrate the ```decryptUrl``` feature. In order to use it, just run
+
+  ``` 
+  node server.js
+  ```
+
+### Examples
+
+  * A simple StandaLock with automatic insertion of decrypted data
+  
+  ```
+  <script type="text/javascript" charset="utf-8">
+      function load(){
+        var config1 = {
+          message: 'Slide to unlock contact info',
+          placeholder: '#mystandalock',
+          data: {
+            mailto: 'cHJpdmF0ZUBleGFtcGxlLmNvbQ==',
+            tel: 'MSg1NTUpNTU1LTU1NTU='
+          },
+          decrypt: function(value) {
+            // my own decrypt function:
+            return window.atob(value);
+          },
+          template: '<p>mail:{{mailto}} tel:{{tel}}</p>'
+        };
+        StandaLock
+          .add(config1)
+          .render();
+      }
+      window.addEventListener('load', load, false);
+  </script>
+  ```
+
+  * StandaLock and ouput printed at different locations:
+  
+  ```
+  <body>
+    <div id="standalockhere"></div>
+    ...
+    <div id="outputhere"></div>
+    <script type="text/javascript" charset="utf-8">
+        function load(){
+          var myconf = {
+            message: 'Info will appear somewhere else',
+            placeholder: '#standalockhere',
+            outputPlaceholder: '#outputhere',
+            data: {
+              mailto: 'cHJpdmF0ZUBleGFtcGxlLmNvbQ==',
+              tel: 'MSg1NTUpNTU1LTU1NTU='
+            },
+            decrypt: function(value) {
+              return window.atob(value);
+            },
+            template: '<p>mail:{{mailto}} tel:{{tel}}</p>'
+          };
+          StandaLock
+            .add(myconf)
+            .render();
+        }
+        window.addEventListener('load', load, false);
+    </script>
+  </body>
+  ```
+
+  * Reveal a submit button only if visitor is Human:
+  
+  ```
+  <body>
+    <div id="#standalock-3"></div>
+    <script type="text/javascript" charset="utf-8">
+        function load(){
+          var config3 = {
+            message: 'Slide to unlock a submit button',
+            placeholder: '#standalock-3',
+            template: '<p><button onclick="alert(\'DONE\')">Click me</button></p>'
+          };
+          StandaLock
+            .add(config3)
+            .render();
+        }
+        window.addEventListener('load', load, false);
+    </script>
+  </body>
+  ```
+
+  * Decrypt data via a remote server (so your ```decrypt``` function is kept secret):
+  
+  ```
+  <body>
+    <div id="#standalock-4"></div>
+    <script type="text/javascript" charset="utf-8">
+        function load(){
+          var config4 = {
+          placeholder: '#standalock-4',
+          message: 'Slide to decrypt from a remote server',
+          data: {
+            mail: "AC:G2E6o6I2>A=6]4@>", // ROT47
+            tel: '`WdddXddd\dddd' // ROT47
+          },
+          decryptUrl: 'http://localhost:1337',
+          template: 'mail:{{mail}} tel:{{tel}}'
+        };
+          StandaLock
+            .add(config4)
+            .render();
+        }
+        window.addEventListener('load', load, false);
+    </script>
+  </body>
+  ```
+
+  * Declaring multiple locks for double proof:
+  
+  ```
+  <body>
+    <div id="standalock-1"></div>
+    <div id="standalock-2"></div>
+    <script src="./standalock.js"></script>
+    <script type="text/javascript" charset="utf-8">
+      function load(){
+        var config1 = {
+          message: 'Are you Human?',
+          placeholder: '#standalock-1',
+          ...
+        };
+        var config2 = {
+          message: 'Are you sure?',
+          placeholder: '#standalock-2',,
+          ...
+        };
+        StandaLock
+          .add(config1)
+          .add(config2)
+          .render();
+      }
+      window.addEventListener('load', load, false);
+    </script>
+  </body>
+  ```
+
 Limitations
----------------
-  At this time it is not possible to bind several output div (like "contact") to the StandaLock. It may be solved in a further release.
+-----------
+  At this time it is not possible to bind several output placeholders (like ```<div id="#mail"></div>``` and ```<div id="#phone"></div>```) to the same StandaLock. It will be solved in further releases.
 
 License
 -------
