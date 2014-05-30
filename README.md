@@ -7,16 +7,21 @@ A standalone slide bar that your visitors unlock using _drag and drop_ to preven
 How it works?
 ---------------
   1. Add a placeholder for the StandaLock in your HTML:
+
      ```html
      <div id="mystandalock"></div>
      ```
+
      You may also add a div that will contain your personal information when shown (optional):
+
      ```html
      <div id="contact">
      ```
-  2. Encrypt your personal information and prepare to provide a decrypt function. Remember that we are not fighting against humans, but spambots, which search for particular patterns in clear text in a reasonable time. I personally use Base64 or ROT13 algorithms which are enough for spambots. Remember that your information will never appear in clear text.
+
+  2. Encrypt your personal information and prepare to provide a decrypt function. Remember that we are not fighting against humans but spambots, which search for particular patterns in clear text in a reasonable time. I personally use Base64 or ROT13 algorithms which seem to be enough. Remember that your information will never appear in clear text. For an even better efficiency, try not to associate evidences of private information with crypted data: break usual variable names like "email" or "address". Javacript can use Unicode in variable names, as shown in the next step.
 
   3. Then it's time for StandaLock configuration:
+
      ```html
      <script src="/path/to/standalock.js"></script>
      <script type="text/javascript" charset="utf-8">
@@ -25,14 +30,14 @@ How it works?
           message: 'Slide to unlock contact info',
           placeholder: '#mystandalock',
           data: {
-            mailto: 'cHJpdmF0ZUBleGFtcGxlLmNvbQ==',
-            tel: 'MSg1NTUpNTU1LTU1NTU='
+            m•a•i•l: 'cHJpdmF0ZUBleGFtcGxlLmNvbQ==',
+            t•e•l: 'MSg1NTUpNTU1LTU1NTU='
           },
           decrypt: function(value) {
             // my own decrypt function:
             return window.atob(value);
           },
-          template: '<p>mail:{{mailto}} tel:{{tel}}</p>'
+          template: '<p>mail:{{m•a•i•l}} tel:{{t•e•l}}</p>'
         };
         StandaLock
           .add(config1)
@@ -42,7 +47,7 @@ How it works?
       </script>
      ```
      in the header (or footer, both ways work).
-     Please have a look on the [documentation]()
+     Please have a look on the [documentation](#doc) for further details.
 
 Why a slidelock?
 ---------------
@@ -73,12 +78,9 @@ This solution is in **pure Javascript**, so no communication with server is requ
 * still runs if you loose network connection on your mobile,
 * don't wait for the server to respond, get unlocked information instantly!
 
-Documentation
+<a name="doc"></a>Documentation
 -------------
-
-### The API
-
-  The new api has two methods only.
+The new api has two methods only.
 
 #### ```StandaLock.add(Object: config)```
 
@@ -88,9 +90,7 @@ This method adds a new Standalock configuration to the jobs queue. This method i
 
 This method renders all the queued jobs.
 
-### The configuration object
-
-The ```config```object accepts the following attributes:
+### The ```config```object accepts the following attributes:
   * ```String: placeholder```: the CSS selector for the placeholder where the StandaLock canvas will be rendered. For example : '#mylockhere';
   * ```String: message```: A message that will be printed to the user prior to the StandaLock;
   * ```Object: data (optional)```: An associative array (key/value hash) containing the encrypted user's data;
@@ -245,7 +245,7 @@ The ```config```object accepts the following attributes:
 
 Limitations
 -----------
-  At this time it is not possible to bind several output placeholders (like ```<div id="#mail"></div>``` and ```<div id="#phone"></div>```) to the same StandaLock. It will be solved in further releases.
+  At this time it is not possible to bind several output placeholders to the same StandaLock. It will be solved in further releases.
 
 License
 -------
