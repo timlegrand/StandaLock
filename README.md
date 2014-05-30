@@ -12,13 +12,13 @@ How it works?
      <div id="mystandalock"></div>
      ```
 
-     You may also add a div that will contain your personal information when shown (optional):
+     You may also add another empty div that will contain your personal information when shown (optional):
 
      ```html
-     <div id="contact">
+     <div id="contact"></div>
      ```
 
-  2. Encrypt your personal information and prepare to provide a decrypt function. Remember that we are not fighting against humans but spambots, which search for particular patterns in clear text in a reasonable time. I personally use Base64 or ROT13 algorithms which seem to be enough. Remember that your information will never appear in clear text. For an even better efficiency, try not to associate evidences of private information with crypted data: break usual variable names like "email" or "address". Javacript can use Unicode in variable names, as shown in the next step.
+  2. Encrypt your personal information and prepare to provide a decrypt function. Remember that we are not fighting against humans but spambots, which search for particular patterns in clear text in a reasonable time. I personally use Base64 or ROT13 algorithms which seem to be enough. Make sure your information never appears in clear text. For an even better efficiency, try not to associate encrypted private information obvious variable names like "email" or "address" (tips provided in the next step).
 
   3. Then it's time for StandaLock configuration:
 
@@ -30,14 +30,14 @@ How it works?
           message: 'Slide to unlock contact info',
           placeholder: '#mystandalock',
           data: {
-            m•a•i•l: 'cHJpdmF0ZUBleGFtcGxlLmNvbQ==',
-            t•e•l: 'MSg1NTUpNTU1LTU1NTU='
+            m-a-i-l: 'cHJpdmF0ZUBleGFtcGxlLmNvbQ==',
+            t-e-l: 'MSg1NTUpNTU1LTU1NTU='
           },
           decrypt: function(value) {
             // my own decrypt function:
             return window.atob(value);
           },
-          template: '<p>mail:{{m•a•i•l}} tel:{{t•e•l}}</p>'
+          template: '<p>mail:{{m-a-i-l}} tel:{{t-e-l}}</p>'
         };
         StandaLock
           .add(config1)
@@ -73,10 +73,12 @@ Why standalone?
   7. Embedding encrypted PI and decrypting it with Javascript at render time is useless since the rendered web page read by spambots will contain clear PI.
   8. So solution is to decrypt and render PI only if visitor is human, that is, if he manually unlocked the slide lock via GUI.
 
-This solution is in **pure Javascript**, so no communication with server is required:
+This solution is in pure **client-side** Javascript, so no communication with server is required:
 * runs on static websites such as Jekyll servers,
 * still runs if you loose network connection on your mobile,
 * don't wait for the server to respond, get unlocked information instantly!
+
+Of course, if you don't want to provide your decrypt function either, you can host it on your own server and give a ```decryptUrl``` instead. Awesome? Yes.
 
 <a name="doc"></a>Documentation
 -------------
@@ -90,15 +92,15 @@ This method adds a new Standalock configuration to the jobs queue. This method i
 
 This method renders all the queued jobs.
 
-### The ```config```object accepts the following attributes:
-  * ```String: placeholder```: the CSS selector for the placeholder where the StandaLock canvas will be rendered. For example : '#mylockhere';
+### The ```config``` object accepts the following attributes:
+  * ```String: placeholder```: the CSS selector for the placeholder where the StandaLock canvas will be rendered (e.g. '#mylockhere');
   * ```String: message```: A message that will be printed to the user prior to the StandaLock;
-  * ```Object: data (optional)```: An associative array (key/value hash) containing the encrypted user's data;
-  * ```Function: decrypt (optional)```: A function that is used to decrypt the user's data. This attributes is mandatory if the ```data```object was provided;
-  * ```String: decryptUrl (optional)```: An url of a remote script that encapsulates the decryption algorithm. This attributes is mandatory if the ```data```object was provided with no ```decrypt``` function. Please note that if both the ```decrypt```function and the ```decryptUrl```are provided, only the ```decryptUrl``` will be used;
+  * ```Object: data``` (optional): An associative array (key/value hash) containing the encrypted user's data;
+  * ```Function: decrypt``` (optional): A function that is used to decrypt the user's data. This attributes is mandatory if the ```data```object was provided;
+  * ```String: decryptUrl``` (optional): An url of a remote script that encapsulates the decryption algorithm. This attributes is mandatory if the ```data``` object was provided with no ```decrypt``` function. Please note that if both the ```decrypt```function and the ```decryptUrl``` are provided, only the ```decryptUrl``` will be used;
   * ```String: template```: An HTML template that will be showed after the unlock process has succeded. 
-  In order to print out the decrypted value form the provided ```data``` attribute, use the ```{{key}}```syntaxe inside the template;
-  * ```String: outputPlaceholder (optional)```: the CSS selector for the placeholder where the decrypted data will be printed. For example : '#myphonehere'.
+  In order to print out the decrypted value form the provided ```data``` attribute, use the ```{{key}}``` syntax inside the template;
+  * ```String: outputPlaceholder``` (optional): the CSS selector for the placeholder where the decrypted data will be printed (e.g. '#myphonehere').
 
 ### Testing
 
