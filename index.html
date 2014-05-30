@@ -2,16 +2,58 @@
 <!-- saved from url=(0050)http://homepage.ntlworld.com/ray.hammond/progress/ -->
 <html lang="en">
 	<head>
+		<meta name="viewport" content="width=device-width, user-scalable=no">
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta charset="utf-8">
-		<title>HTML5 Progress Slider</title>		
+		<title>HTML5 Progress Slider</title>
 		<script src="./webfont.js" type="text/javascript" async=""></script>
+		<style>
+		section {
+			text-align: center;
+		}
+		</style>
 	</head>
 	<body>
-		<center>
-			<div id="standalock"></div>
-			<div id="contact"></div>
-		</center>
-		<script src="./standalock.js" type="text/javascript"></script>
+		<section id="standalock-1"></section>
+		<section id="standalock-2"></section>
+		<section id="standalock-3"></section>
+	<script src="./standalock.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		function load(){
+			var config1 = {
+				message: 'Slide to unlock contact info',
+				placeholder: '#standalock-1',
+				data: {
+					mailto: 'cHJpdmF0ZUBleGFtcGxlLmNvbQ==',
+					tel: 'MSg1NTUpNTU1LTU1NTU='
+				},
+				decrypt: function(value) {
+			    return window.atob(value);
+			  },
+				template: '<p><a href="mailto:{{mailto}}">{{mailto}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="tel:{{tel}}">{{tel}}</a></p>'
+			};
+			var config2 = {
+				message: 'Are you a real human? Slide to unlock contact info',
+				placeholder: '#standalock-2',
+				template: '<p><button onclick="alert(\'DONE\')">Click me</button></p>'
+			}
+			var config3 = {
+				placeholder: '#standalock-3',
+				message: 'Decrypt from a server',
+				data: {
+					mailto: "AC:G2E6o6I2>A=6]4@>", // ROT47
+					tel: '`WdddXddd\dddd' // ROT47
+				},
+				decryptUrl: 'http://localhost:1337',
+				template: '<p><a href="mailto:{{mailto}}">{{mailto}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="tel:{{tel}}">{{tel}}</a></p>'
+			};
+			StandLock
+				.add(config1)
+				.add(config2)
+				.add(config3)
+				.render();
+		}
+		window.addEventListener('load', load, false);
+	</script>
 	</body>
 </html>
