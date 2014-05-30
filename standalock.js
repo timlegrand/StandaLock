@@ -2,7 +2,6 @@
 
 ;(function(win, doc){
 
-
   function StandLockClazz(config){
 
     this.checkCanvasSupport();
@@ -267,6 +266,5 @@
       });
     }
   };
-
 
 }(window, document));
