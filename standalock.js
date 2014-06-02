@@ -26,6 +26,7 @@
     this._slider_value = 0.0; // represents percentage
     this._cursor_catched = false;
     this._passed = false; // prevents from running secured actions multiple times
+    this._unlockError = false;
 
     // Graphics-dependant constants
     this._iWIDTH = 469;
@@ -124,9 +125,25 @@
     this.ctx.drawImage(this.img, 0, this._iHEIGHT, x_end, this._iHEIGHT, 0, 0, x_end, this._iHEIGHT);
 
     // Text to screen
-    this.ctx.fillStyle = "grey";
-    this.ctx.font = "14pt Arial";
-    this.ctx.fillText(Math.round(this._slider_value) + " %", this._x_text, this._y_text);
+    var text = '';
+    if (this._passed === true) {
+      this.ctx.font = "18pt Arial";
+      if (this._unlockError === false) {
+        this.ctx.fillStyle = "#66BB00";
+        text = "✔";
+      }
+      else {
+        this.ctx.fillStyle = "#AA0000";
+        text = "✘";
+      }
+    }
+    else
+    {
+      this.ctx.font = "14pt Arial";
+      this.ctx.fillStyle = "grey";
+      text = Math.round(this._slider_value) + " %";
+    }
+    this.ctx.fillText(text, this._x_text, this._y_text);
 
     /* Draw cursor */
     this.ctx.beginPath();
@@ -160,8 +177,7 @@
       return;
     }
     var mousePos = this._getMousePos(evt);
-    var s = this._slider_value; // slider value is in percent
-    s = Math.round(mousePos.x / this._w * 100 * 100) / 100; // rounded to two decimals
+    var s = mousePos.x / this._w * 100;
     if (s < 0.0) {
       s = 0.0;
     }
@@ -224,7 +240,6 @@
         this._draw();
       }
     }
-    
   }
 
   StandaLockClass.prototype._onmouseout = function(evt) {
@@ -237,13 +252,13 @@
   }
 
   StandaLockClass.prototype._unlock = function() {  
-    var o = {};
-    if (!!this.decryptUrl){
-      this._decryptFromServer();
-    }
-    else {
-      this._decrypt();
-    }
+      var o = {};
+      if (!!this.decryptUrl){
+          this._decryptFromServer();
+      }
+      else {
+        this._decrypt();
+      }
   }
 
   StandaLockClass.prototype._applyTemplate = function(template, obj){
@@ -266,6 +281,10 @@
     xhr.withCredentials = false;
     xhr.addEventListener('load', function(evt){
       this._applyTemplate(this.template, JSON.parse(evt.target.response));
+    }.bind(this), false);
+    xhr.addEventListener('error', function(evt){
+      this._unlockError = true;
+      this._draw(); // terminate with visual feedback
     }.bind(this), false);
     xhr.open('POST', this.decryptUrl, true);
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
