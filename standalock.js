@@ -62,7 +62,7 @@
     this.img.addEventListener('load', this._draw.bind(this), false);
     this.img.src = 'progress-tiles.jpg';
 
-    p.textContent = this.message + ' for ' + this.placeholderSelector;
+    p.textContent = this.message;
 
     this.canvas.width = this._iWIDTH;
     this.canvas.height = this._iHEIGHT;
@@ -85,7 +85,7 @@
       this.placeholder.appendChild(docfrag);
     }
     catch(e){
-      throw 'Can not find element '+this.placeholderSelector;
+      throw 'Can not find element ' + this.placeholderSelector;
     }
 
   }
