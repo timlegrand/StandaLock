@@ -28,18 +28,45 @@
     this._passed = false; // prevents from running secured actions multiple times
     this._unlockError = false;
 
-    // Graphics-dependant constants
-    this._iWIDTH = 469;
-    this._iHEIGHT = 68; // half-height, one bar only
-    this._cursor_radius = 13;
-    this._x1 = 114 + (this._cursor_radius-1); // X position where the progress segment starts
-    this._x2 = 445 - (this._cursor_radius-1); // X position where the progress segment ends
-    this._w = this._x2 - this._x1;  // slider width
-    this._y = 33;  // Y position of center of the slider
-    this._x_text = this._x1 - 70;  // X position where to write text
-    this._y_text = this._y + 7;
-    this._sx = this._w * this._slider_value / 100;
+    // User implemented canvas and draw function (if any)
+    this._loadCanvas(config.userCanvas);
 
+    this._sx = this._w * this._slider_value / 100;
+  }
+
+  StandaLockClass.prototype._loadCanvas = function(canvas) {
+    if (!!canvas) {
+      this._drawCanvas    = canvas.draw; 
+      this._width         = canvas.width; 
+      this._height        = canvas.height; 
+      this._cursor_radius = canvas.cursor_radius;
+      this._x1            = canvas.x1;
+      this._w             = canvas.w; 
+      this._y             = canvas.y;
+      this._x_text        = canvas.x_text;
+      this._y_text        = canvas.y_text;
+
+      if (!!canvas.image) { // Use picture instead of canvas
+        this.img = new Image();
+        this.img.src = canvas.image;
+      }
+    }
+    else {
+      // Defaults
+      var defaultCanvas = {
+        image: 'progress-tiles.jpg',
+        width: 469,
+        height: 68,                   // half-height, one bar only if dual image provided
+        cursor_radius: 13,
+        x1: 114 + (13-1),             // X position where the progress segment starts
+        x2: 445 - (13-1),             // X position where the progress segment ends
+        w: (445 - (13-1)) - (114 + (13-1)),  // slider width
+        y: 33,                        // Y position of center of the slider
+        x_text: (114 + (13-1)) - 70,  // X position where to write text
+        y_text: 33 + 7
+      }
+      this._loadCanvas(defaultCanvas);
+    }
   }
 
   StandaLockClass.prototype.checkCanvasSupport = function(){
@@ -52,20 +79,16 @@
   }
 
   StandaLockClass.prototype.render = function() {
-
     // Generate HTML for the lock
     var docfrag = document.createDocumentFragment();
     var p = document.createElement('p');
     this.canvas = document.createElement('canvas');
-      
-    this.img = new Image();
-    this.img.addEventListener('load', this._draw.bind(this), false);
-    this.img.src = 'progress-tiles.jpg';
-
+    //this.canvas.setAttribute('style', 'border: 1px solid');
+    
     p.textContent = this.message;
 
-    this.canvas.width = this._iWIDTH;
-    this.canvas.height = this._iHEIGHT;
+    this.canvas.width = this._width;
+    this.canvas.height = this._height;
     this.canvas.style.cursor = 'pointer';
     this._bindEvents();
     this.ctx = this.canvas.getContext('2d');
@@ -73,12 +96,12 @@
     docfrag.appendChild(p);
     docfrag.appendChild(this.canvas);
 
-    if (!this.outputContainerSelector) {
-      this.ouputContainer = document.createElement('div');
-      docfrag.appendChild(this.ouputContainer);
+    if (!!this.outputContainerSelector) {
+      this.ouputContainer = document.querySelector(this.outputContainerSelector);
     }
     else {
-      this.ouputContainer = document.querySelector(this.outputContainerSelector);
+      this.ouputContainer = document.createElement('div');
+      docfrag.appendChild(this.ouputContainer);
     }
 
     try{
@@ -88,10 +111,12 @@
       throw 'Can not find element ' + this.placeholderSelector;
     }
 
+    // Draw canvas!
+    if (!!this.img) this.img.addEventListener('load', this._draw.bind(this), false);
+    else this._draw();
   }
 
   StandaLockClass.prototype._bindEvents = function() {
-
     // handle clicks
     this.canvas.addEventListener('mousedown', this._onmousedown.bind(this), false);
     this.canvas.addEventListener('mousemove', this._onmousemove.bind(this), false);
@@ -109,22 +134,37 @@
   };
 
   StandaLockClass.prototype._draw = function() {
-    this._drawBase();
-    this._drawProgress();
+    // Calculated x position where the overlayed image should end
+    var cursor_pos = this._x1 + (this._w * this._slider_value) / 100; // relative to slidebar
+
+    // User-provided draw function
+    if (!!this._drawCanvas) {
+      try {
+        this._drawCanvas(this.ctx, cursor_pos);  
+      }
+      catch (e) {
+        console.debug("Draw error on " + this.placeholderSelector);
+        throw e;
+      }
+    }
+    // Default
+    else {
+      this._drawBase();
+      this._drawProgress(cursor_pos);
+      this._drawCursor(cursor_pos);
+    }
+    this._drawText();
   }
 
   StandaLockClass.prototype._drawBase = function() {
-    this.ctx.drawImage(this.img, 0, 0, this._iWIDTH, this._iHEIGHT, 0, 0, this._iWIDTH, this._iHEIGHT);
+    this.ctx.drawImage(this.img, 0, 0, this._width, this._height, 0, 0, this._width, this._height);
   }
 
-  StandaLockClass.prototype._drawProgress = function() {
+  StandaLockClass.prototype._drawProgress = function(cursor_pos) {
+    this.ctx.drawImage(this.img, 0, this._height, cursor_pos, this._height, 0, 0, cursor_pos, this._height);
+  }
 
-    // Calculated x position where the overalyed image should end
-    var x_end = this._x1 + (this._w * this._slider_value) / 100; // relative to slidebar
-
-    this.ctx.drawImage(this.img, 0, this._iHEIGHT, x_end, this._iHEIGHT, 0, 0, x_end, this._iHEIGHT);
-
-    // Text to screen
+  StandaLockClass.prototype._drawText = function() {
     var text = '';
     if (this._passed === true) {
       this.ctx.font = "18pt Arial";
@@ -144,11 +184,12 @@
       text = Math.round(this._slider_value) + " %";
     }
     this.ctx.fillText(text, this._x_text, this._y_text);
+  }
 
-    /* Draw cursor */
+  StandaLockClass.prototype._drawCursor = function(cursor_pos) {
     this.ctx.beginPath();
-    this.ctx.arc(x_end, this._y, this._cursor_radius, 0, 2 * Math.PI, false);
-    var radgrad = this.ctx.createRadialGradient(x_end, this._y, 0, x_end, this._y, this._cursor_radius);
+    this.ctx.arc(cursor_pos, this._y, this._cursor_radius, 0, 2 * Math.PI, false);
+    var radgrad = this.ctx.createRadialGradient(cursor_pos, this._y, 0, cursor_pos, this._y, this._cursor_radius);
     radgrad.addColorStop(0, 'hsl(0,0%,85%)');
     radgrad.addColorStop(0.7, 'hsl(0,0%,80%)');
     radgrad.addColorStop(0.9, 'hsl(0,0%,80%)');
@@ -233,9 +274,9 @@
     }
     else {
       // Standard cursor behavior: cursors goes where mouse clicks
-      if  ((mousePos.x >= 0) && (mousePos.x <= w)){
-        _cursor_catched = true;
-        _slider_value = Math.round(mousePos.x / w * 100 * 100) / 100;
+      if  ((mousePos.x >= 0) && (mousePos.x <= this._w)){
+        this._cursor_catched = true;
+        this._slider_value = Math.round(mousePos.x / this._w * 100 * 100) / 100;
         // force redraw so that the cursor is 'catched' by the click
         this._draw();
       }
