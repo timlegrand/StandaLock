@@ -15,22 +15,24 @@
 			#putdatahere {
 				position: absolute;
 				top: 0px;
-				right: 0px;
-				margin-top: 25px;
+				right: 50px;
+				margin-top: 15px;
+				font-size: 20px;
+				text-align: left;
 			}
 		</style>
   </head>
   <body>
-		<div id="putdatahere">-> Look here when unlocking StandaLock #2 <-</div>
+		<div id="putdatahere"><strong>Look here</strong><br/>when unlocking<br/><strong>StandaLock #2</strong></div>
 		<div id="standalock-1"></div>
 		<div id="standalock-2"></div>
 		<div id="standalock-3"></div>
 		<div id="standalock-4"></div>
 		<script src="./standalock.js"></script>
 		<script type="text/javascript" charset="utf-8">
-			function myCustomDrawFunc(ctx, cursor_x) {
+			function myCustomLock(ctx, cursor_x) {
 
-				// Helper function to create neat, rounded rectangles
+				// Helper function to create rounded rectangles
 				CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
 				  if (w < 2 * r) r = w / 2;
 				  if (h < 2 * r) r = h / 2;
@@ -99,7 +101,9 @@
 		    ctx.fillStyle = radgrad;
 				var slidebar = ctx.roundRect(x, y, cursor_x-x, h, r);
 				slidebar.fill();
+			};
 
+			function myCustomCursor(ctx, cursor_x) {
 				// Cursor
 				var x = cursor_x, y = 24+11, r = 13;
 		    ctx.beginPath();
@@ -127,7 +131,9 @@
 			};
 
 			var myCustomCanvas = { 
-				draw: myCustomDrawFunc,
+				draw: myCustomLock,
+				cursor: myCustomCursor,
+				//image: 'progress-tiles.jpg',
 		    width: 460,
 		    height: 68,
 		    cursor_radius: 13,
@@ -164,7 +170,7 @@
 					decrypt: function(value) {
 				    return window.atob(value);
 				  },
-					template: '<p><a href="mailto:{{mailto}}">{{mailto}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="tel:{{tel}}">{{tel}}</a></p>'
+					template: '<p><a href="mailto:{{mailto}}">{{mailto}}</a><br/><a href="tel:{{tel}}">{{tel}}</a></p>'
 				};
 				var config3 = {
 					message: 'Slide to unlock a submit button',

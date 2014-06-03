@@ -8,8 +8,8 @@
 
     // Mandatory inputs
     if (!config.placeholder) throw 'Missing placeholder.';
-    if (((!config.decrypt) && (!config.decryptUrl)) && ((!config.template) && (!config.data))) throw 'Missing decrypt method for "' + config.placeholder + '".';
-    if (!config.template) throw 'Missing template for "' + config.placeholder + '".';
+    if (((!config.decrypt) && (!config.decryptUrl)) && ((!config.template) && (!config.data))) throw 'Missing decrypt method for "' + config.placeholderSelector + '".';
+    if (!config.template) throw 'Missing template for "' + config.placeholderSelector + '".';
 
     this.placeholder = document.querySelector(config.placeholder);
     this.placeholderSelector = config.placeholder;
@@ -34,14 +34,27 @@
     this._sx = this._w * this._slider_value / 100;
   }
 
+  StandaLockClass.prototype.checkCanvasSupport = function(){
+    try {
+      document.createElement('canvas').getContext('2d');
+    }
+    catch(e){
+      alert("Canvas not supported!");
+    }
+  }
+
   StandaLockClass.prototype._loadCanvas = function(canvas) {
     if (!!canvas) {
-      this._drawCanvas    = canvas.draw; 
-      this._width         = canvas.width; 
-      this._height        = canvas.height; 
+      if ((!canvas.image) && (!canvas.draw)) {
+        throw 'Missing draw function or image for "' + this.placeholderSelector + '".';
+      }
+      this._drawCanvas    = canvas.draw;    // Bind user's function
+      this._drawCursor    = canvas.cursor;  // Bind user's function
+      this._width         = canvas.width;
+      this._height        = canvas.height;
       this._cursor_radius = canvas.cursor_radius;
       this._x1            = canvas.x1;
-      this._w             = canvas.w; 
+      this._w             = canvas.w;
       this._y             = canvas.y;
       this._x_text        = canvas.x_text;
       this._y_text        = canvas.y_text;
@@ -49,10 +62,14 @@
       if (!!canvas.image) { // Use picture instead of canvas
         this.img = new Image();
         this.img.src = canvas.image;
+        // Bind default draw to dual image mode
+        this._drawCanvas = this._drawDualImage;
+      }
+      if (!canvas.cursor) { // Use default cursor design
+        this._drawCursor = this._drawDefaultCursor;
       }
     }
-    else {
-      // Defaults
+    else {  // Load defaults
       var defaultCanvas = {
         image: 'progress-tiles.jpg',
         width: 469,
@@ -69,13 +86,61 @@
     }
   }
 
-  StandaLockClass.prototype.checkCanvasSupport = function(){
+  StandaLockClass.prototype._draw = function() {
+    // Calculated x position where the overlayed image should end
+    var cursor_pos = this._x1 + (this._w * this._slider_value) / 100; // relative to slide bar
+
     try {
-      document.createElement('canvas').getContext('2d');
+      this._drawCanvas(this.ctx, cursor_pos);
+      this._drawCursor(this.ctx, cursor_pos);
+      this._drawText();
     }
-    catch(e){
-      alert("Canvas not supported!");
+    catch (e) {
+      console.debug("Draw error on " + this.placeholderSelector);
+      throw e;
     }
+
+  }
+
+  StandaLockClass.prototype._drawDualImage = function(ctx, cursor_pos) {
+    // Upper half, slide bar empty
+    this.ctx.drawImage(this.img, 0, 0, this._width, this._height, 0, 0, this._width, this._height);
+    // Lower half, slide bar full
+    this.ctx.drawImage(this.img, 0, this._height, cursor_pos, this._height, 0, 0, cursor_pos, this._height);
+  }
+
+  StandaLockClass.prototype._drawDefaultCursor = function(ctx, cursor_pos) {
+    this.ctx.beginPath();
+    this.ctx.arc(cursor_pos, this._y, this._cursor_radius, 0, 2 * Math.PI, false);
+    var radgrad = this.ctx.createRadialGradient(cursor_pos, this._y, 0, cursor_pos, this._y, this._cursor_radius);
+    radgrad.addColorStop(0, 'hsl(0,0%,85%)');
+    radgrad.addColorStop(0.7, 'hsl(0,0%,80%)');
+    radgrad.addColorStop(0.9, 'hsl(0,0%,80%)');
+    radgrad.addColorStop(1, 'hsl(0,0%,65%)');
+    this.ctx.fillStyle = radgrad;
+    this.ctx.fill();
+  }
+
+  StandaLockClass.prototype._drawText = function() {
+    var text = '';
+    if (this._passed === true) {
+      this.ctx.font = "18pt Arial";
+      if (this._unlockError === false) {
+        this.ctx.fillStyle = "#66BB00";
+        text = "✔";
+      }
+      else {
+        this.ctx.fillStyle = "#AA0000";
+        text = "✘";
+      }
+    }
+    else
+    {
+      this.ctx.font = "14pt Arial";
+      this.ctx.fillStyle = "grey";
+      text = Math.round(this._slider_value) + " %";
+    }
+    this.ctx.fillText(text, this._x_text, this._y_text);
   }
 
   StandaLockClass.prototype.render = function() {
@@ -133,72 +198,7 @@
 
   };
 
-  StandaLockClass.prototype._draw = function() {
-    // Calculated x position where the overlayed image should end
-    var cursor_pos = this._x1 + (this._w * this._slider_value) / 100; // relative to slidebar
-
-    // User-provided draw function
-    if (!!this._drawCanvas) {
-      try {
-        this._drawCanvas(this.ctx, cursor_pos);  
-      }
-      catch (e) {
-        console.debug("Draw error on " + this.placeholderSelector);
-        throw e;
-      }
-    }
-    // Default
-    else {
-      this._drawBase();
-      this._drawProgress(cursor_pos);
-      this._drawCursor(cursor_pos);
-    }
-    this._drawText();
-  }
-
-  StandaLockClass.prototype._drawBase = function() {
-    this.ctx.drawImage(this.img, 0, 0, this._width, this._height, 0, 0, this._width, this._height);
-  }
-
-  StandaLockClass.prototype._drawProgress = function(cursor_pos) {
-    this.ctx.drawImage(this.img, 0, this._height, cursor_pos, this._height, 0, 0, cursor_pos, this._height);
-  }
-
-  StandaLockClass.prototype._drawText = function() {
-    var text = '';
-    if (this._passed === true) {
-      this.ctx.font = "18pt Arial";
-      if (this._unlockError === false) {
-        this.ctx.fillStyle = "#66BB00";
-        text = "✔";
-      }
-      else {
-        this.ctx.fillStyle = "#AA0000";
-        text = "✘";
-      }
-    }
-    else
-    {
-      this.ctx.font = "14pt Arial";
-      this.ctx.fillStyle = "grey";
-      text = Math.round(this._slider_value) + " %";
-    }
-    this.ctx.fillText(text, this._x_text, this._y_text);
-  }
-
-  StandaLockClass.prototype._drawCursor = function(cursor_pos) {
-    this.ctx.beginPath();
-    this.ctx.arc(cursor_pos, this._y, this._cursor_radius, 0, 2 * Math.PI, false);
-    var radgrad = this.ctx.createRadialGradient(cursor_pos, this._y, 0, cursor_pos, this._y, this._cursor_radius);
-    radgrad.addColorStop(0, 'hsl(0,0%,85%)');
-    radgrad.addColorStop(0.7, 'hsl(0,0%,80%)');
-    radgrad.addColorStop(0.9, 'hsl(0,0%,80%)');
-    radgrad.addColorStop(1, 'hsl(0,0%,65%)');
-    this.ctx.fillStyle = radgrad;
-    this.ctx.fill();
-  }
-
-  // Returns mouse position relatively to slidebar
+  // Returns mouse position relatively to slide bar
   StandaLockClass.prototype._getMousePos = function(evt) {
     var rect = this.canvas.getBoundingClientRect();
     if (evt.targetTouches){
