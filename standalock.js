@@ -8,12 +8,12 @@
 
     // Mandatory inputs
     if (!config.placeholder) throw 'Missing placeholder.';
-    if (((!config.decrypt) && (!config.decryptUrl)) && ((!config.template) && (!config.data))) throw 'Missing decrypt method for "' + config.placeholderSelector + '".';
-    if (!config.template) throw 'Missing template for "' + config.placeholderSelector + '".';
+    if (((!config.decrypt) && (!config.decryptUrl)) && ((!config.format) && (!config.data))) throw 'Missing decrypt method for "' + config.placeholderSelector + '".';
+    if (!config.format) throw 'Missing format for "' + config.placeholderSelector + '".';
 
     this.placeholder = document.querySelector(config.placeholder);
     this.placeholderSelector = config.placeholder;
-    this.template = config.template;
+    this.format = config.format;
     
     // Optional inputs
     this.message = config.message;
@@ -29,7 +29,7 @@
     this._unlockError = false;
 
     // User implemented canvas and draw function (if any)
-    this._loadCanvas(config.userCanvas);
+    this._loadDesign(config.design);
 
     this._sx = this._w * this._slider_value / 100;
   }
@@ -43,34 +43,178 @@
     }
   }
 
-  StandaLockClass.prototype._loadCanvas = function(canvas) {
-    if (!!canvas) {
-      if ((!canvas.image) && (!canvas.draw)) {
-        throw 'Missing draw function or image for "' + this.placeholderSelector + '".';
-      }
-      this._drawCanvas    = canvas.draw;    // Bind user's function
-      this._drawCursor    = canvas.cursor;  // Bind user's function
-      this._width         = canvas.width;
-      this._height        = canvas.height;
-      this._cursor_radius = canvas.cursor_radius;
-      this._x1            = canvas.x1;
-      this._w             = canvas.w;
-      this._y             = canvas.y;
-      this._x_text        = canvas.x_text;
-      this._y_text        = canvas.y_text;
-
-      if (!!canvas.image) { // Use picture instead of canvas
-        this.img = new Image();
-        this.img.src = canvas.image;
-        // Bind default draw to dual image mode
-        this._drawCanvas = this._drawDualImage;
-      }
-      if (!canvas.cursor) { // Use default cursor design
-        this._drawCursor = this._drawDefaultCursor;
-      }
+  // Load a user-provided design (if type is string, load a predefined design)
+  StandaLockClass.prototype._loadDesign = function(design) {
+    
+    // No design instruction provided, load defaults
+    if (!design) {
+      var d = this._loadPredefinedDesign('defaultDualImage');
+      this._loadDesign(d);
+      return;
     }
-    else {  // Load defaults
-      var defaultCanvas = {
+
+    // Load predefined embedded design
+    if (typeof design === 'string') {
+      var d = this._loadPredefinedDesign(design);
+      this._loadDesign(d);
+      return;
+    }
+
+    // At this point, design should be user-provided
+    if (typeof design !== 'object') {
+      throw 'Problem loading user-provided design for "' + config.placeholderSelector + '".';
+    }
+
+    this._drawLock      = design.drawLock;    // Bind user's function if any
+    this._drawCursor    = design.drawCursor;  // Bind user's function if any
+    this._width         = design.width;
+    this._height        = design.height;
+    this._cursor_radius = design.cursor_radius;
+    this._x1            = design.x1;
+    this._w             = design.w;
+    this._y             = design.y;
+    this._x_text        = design.x_text;
+    this._y_text        = design.y_text;
+
+    if (!!design.image) { // Use picture instead of draw function
+      this.img = new Image();
+      this.img.src = design.image;
+      // Bind default draw to dual image mode, 
+      this._drawLock = this._drawDualImage; 
+    }
+    if (!design.drawCursor) { // Use default cursor design
+      this._drawCursor = this._drawDefaultCursor;
+    }
+  }
+    
+
+    StandaLockClass.prototype._loadPredefinedDesign = function(design) {
+
+      function defaultLock(ctx, cursor_x) {
+
+        // Helper function to create rounded rectangles
+        CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+          if (w < 2 * r) r = w / 2;
+          if (h < 2 * r) r = h / 2;
+          this.beginPath();
+          this.moveTo(x+r, y);
+          this.arcTo(x+w, y,   x+w, y+h, r);
+          this.arcTo(x+w, y+h, x,   y+h, r);
+          this.arcTo(x,   y+h, x,   y,   r);
+          this.arcTo(x,   y,   x+w, y,   r);
+          this.closePath();
+          return this;
+        }
+
+        // Lock
+        var x = 10, y = 0, w = 443, h = 50, r = 40;
+        var border = ctx.createLinearGradient(x, y, x, y+h);
+        border.addColorStop(0, 'hsl(216,10%,40%)');
+        border.addColorStop(1, 'hsl(216,10%,10%)');
+        ctx.strokeStyle = border;
+        ctx.lineWidth = 12;
+        var background = ctx.createLinearGradient(x, y+10, x, y+h-10);
+        background.addColorStop(0, 'hsl(0,0%,100%)');
+        background.addColorStop(1, 'hsl(0,0%,85%)');
+        ctx.fillStyle = background;
+        var lock = ctx.roundRect(x, y+10, w, h, r);
+        lock.fill();
+        lock.stroke();
+
+        // Empty slide bar
+        var x = 95, y = 24, w = 343, h = 22, r = 40;
+        var slidebackground = ctx.createLinearGradient(x, y, x, y+h);
+        slidebackground.addColorStop(0, 'hsl(0,0%,75%)');
+        slidebackground.addColorStop(0.1, 'hsl(0,0%,65%)');
+        slidebackground.addColorStop(0.9, 'hsl(0,0%,85%)');
+        slidebackground.addColorStop(1, 'hsl(0,0%,95%)');
+        ctx.fillStyle = slidebackground;
+        var slidebar = ctx.roundRect(x, y, w, h, r);
+        slidebar.fill();
+
+        ctx.globalCompositeOperation = "multiply";  // Add G.I.
+        var slidebackground = ctx.createLinearGradient(x, y, x+w, y+h);
+        slidebackground.addColorStop(0, 'hsl(0,0%,95%)');
+        slidebackground.addColorStop(0.05, 'hsl(0,0%,100%)');
+        slidebackground.addColorStop(0.95, 'hsl(0,0%,100%)');
+        slidebackground.addColorStop(1, 'hsl(0,0%,95%)');
+        ctx.fillStyle = slidebackground;
+        var slidebar = ctx.roundRect(x, y, w, h, r);
+        slidebar.fill();
+        ctx.globalCompositeOperation = "source-over";
+
+        ctx.globalCompositeOperation = "screen";  // Add G.I.
+        var slidebackground = ctx.createLinearGradient(x, y, x+w, y+h);
+        slidebackground.addColorStop(0, 'hsl(0,0%,0%)');
+        slidebackground.addColorStop(0.5, 'hsl(0,0%,30%)');
+        slidebackground.addColorStop(1, 'hsl(0,0%,0%)');
+        ctx.fillStyle = slidebackground;
+        var slidebar = ctx.roundRect(x, y, w, h, r);
+        slidebar.fill();
+        ctx.globalCompositeOperation = "source-over";
+
+        // Filled slide bar
+        var x = 97, y = 26, w = 339, h = 18, r = 340;
+        var radgrad = ctx.createRadialGradient(x+60, y-10, 0, x, y, r);
+        radgrad.addColorStop(0, 'hsl(76,93%,42%)');
+        radgrad.addColorStop(1, 'hsl(80,95%,35%)');
+        ctx.fillStyle = radgrad;
+        var slidebar = ctx.roundRect(x, y, cursor_x-x, h, r);
+        slidebar.fill();
+/*
+        ctx.globalCompositeOperation = "overlay"; // Add G.I.
+        ctx.beginPath();
+        if (cursor_x > x+w/4-1) ctx.rect(x+w/4-1, y, 1, h);
+        if (cursor_x > x+2*w/4-1) ctx.rect(x+2*w/4-1, y, 1, h);
+        if (cursor_x > x+3*w/4-1) ctx.rect(x+3*w/4-1, y, 1, h);
+        ctx.fillStyle = "white";
+        slidebar.fill();
+        ctx.globalCompositeOperation = "source-over";*/
+
+      };
+
+      function defaultCursor(ctx, cursor_x) {
+        // Cursor
+        var x = cursor_x, y = 24+11, r = 13;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 2 * Math.PI, false);
+        var radgrad = ctx.createRadialGradient(x, y, 0, x, y, r);
+        radgrad.addColorStop(0, 'hsl(0,0%,85%)');
+        radgrad.addColorStop(0.7, 'hsl(0,0%,80%)');
+        radgrad.addColorStop(0.9, 'hsl(0,0%,80%)');
+        radgrad.addColorStop(1, 'hsl(0,0%,65%)');
+        ctx.fillStyle = radgrad;
+        ctx.fill();
+        ctx.globalCompositeOperation = "overlay"; // Add G.I.
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 2 * Math.PI, false);
+        var radgrad = ctx.createLinearGradient(x-r, y-r, x+r, y+r);
+        radgrad.addColorStop(0, 'hsl(0,0%,20%)');
+        radgrad.addColorStop(0.5, 'hsl(0,0%,60%)');
+        radgrad.addColorStop(0.5, 'hsl(0,0%,60%)');
+        radgrad.addColorStop(1, 'hsl(0,0%,20%)');
+        ctx.fillStyle = radgrad;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 2 * Math.PI, false);
+        ctx.globalCompositeOperation = "source-over";
+      };
+
+      var defaultDesign = { 
+        drawLock: defaultLock,
+        drawCursor: defaultCursor,
+        //image: 'progress-tiles.jpg',
+        width: 460,
+        height: 68,
+        cursor_radius: 13,
+        x1: 95 + 13,            // X position where the cursor starts
+        w: 427 - 95 - 13,       // sliding course
+        y: 24+11,               // Y position of center of the cursor
+        x_text: 95 + 13 - 70,   // X position where to write text
+        y_text: 24+11 + 7       // Y position where to write text
+      };
+
+      var defaultDualImageDesign = {
         image: 'progress-tiles.jpg',
         width: 469,
         height: 68,                   // half-height, one bar only if dual image provided
@@ -82,16 +226,24 @@
         x_text: (114 + (13-1)) - 70,  // X position where to write text
         y_text: 33 + 7
       }
-      this._loadCanvas(defaultCanvas);
+
+      switch (design) {
+        case "default":
+          return defaultDesign;
+        case "defaultImage":
+          return defaultDualImageDesign;
+        default:
+          return "default";
+      }
+
     }
-  }
 
   StandaLockClass.prototype._draw = function() {
     // Calculated x position where the overlayed image should end
     var cursor_pos = this._x1 + (this._w * this._slider_value) / 100; // relative to slide bar
 
     try {
-      this._drawCanvas(this.ctx, cursor_pos);
+      this._drawLock(this.ctx, cursor_pos);
       this._drawCursor(this.ctx, cursor_pos);
       this._drawText();
     }
@@ -148,7 +300,7 @@
     var docfrag = document.createDocumentFragment();
     var p = document.createElement('p');
     this.canvas = document.createElement('canvas');
-    //this.canvas.setAttribute('style', 'border: 1px solid');
+    //this.canvas.setAttribute('style', 'border: 1px solid ; border-color: #ff0000');
     
     p.textContent = this.message;
 
@@ -302,11 +454,11 @@
       }
   }
 
-  StandaLockClass.prototype._applyTemplate = function(template, obj){
+  StandaLockClass.prototype._applyformat = function(format, obj){
     for(var val in obj){
-      template = template.replace(new RegExp('{{'+val+'}}', 'g'), obj[val]);
+      format = format.replace(new RegExp('{{'+val+'}}', 'g'), obj[val]);
     }
-    this.ouputContainer.innerHTML = template;
+    this.ouputContainer.innerHTML = format;
   }
 
   StandaLockClass.prototype._decrypt = function(){
@@ -314,14 +466,14 @@
     for(var d in this.data){
       o[d] = this.decryptFn(this.data[d])
     }
-    this._applyTemplate(this.template, o);
+    this._applyformat(this.format, o);
   }
 
   StandaLockClass.prototype._decryptFromServer = function(){
     var xhr = new XMLHttpRequest();
     xhr.withCredentials = false;
     xhr.addEventListener('load', function(evt){
-      this._applyTemplate(this.template, JSON.parse(evt.target.response));
+      this._applyformat(this.format, JSON.parse(evt.target.response));
     }.bind(this), false);
     xhr.addEventListener('error', function(evt){
       this._unlockError = true;
