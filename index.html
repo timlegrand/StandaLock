@@ -52,12 +52,12 @@
 
 			function sampleCursor(ctx, cursor_x) {
 				var x = cursor_x - 15, y = 25 - 15, w = 30, h = 30;
-		    ctx.beginPath();
-		    ctx.rect(x, y, w, h);
-		    ctx.fillStyle = "LightSteelBlue";
-		    ctx.fill();
+			    ctx.beginPath();
+			    ctx.rect(x, y, w, h);
+			    ctx.fillStyle = "LightSteelBlue";
+			    ctx.fill();
 
-		    this._x_text = cursor_x -10;	// Wow! 'this' refers to the StandaLock itslef!
+			    this._x_text = cursor_x -10;	// Wow! 'this' refers to the StandaLock itslef!
 			};
 
 			var sampleUserDesign = { 
@@ -83,8 +83,8 @@
 						tel: 'MSg1NTUpNTU1LTU1NTU='
 					},
 					decrypt: function(value) {
-				    return window.atob(value);
-				  },
+			    	return window.atob(value);
+			  	},
 					format: '<p><a href="mailto:{{mailto}}">{{mailto}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="tel:{{tel}}">{{tel}}</a></p>'/*,
 					design: 'default'*/
 				};
@@ -98,8 +98,8 @@
 						tel: 'MSg1NTUpNTU1LTU1NTU='
 					},
 					decrypt: function(value) {
-				    return window.atob(value);
-				  },
+			    	return window.atob(value);
+			  	},
 					format: '<p><a href="mailto:{{mailto}}">{{mailto}}</a><br/><a href="tel:{{tel}}">{{tel}}</a></p>'
 				};
 				var config3 = {
@@ -139,6 +139,6 @@
 					.render();
 			}
 			window.addEventListener('load', load, false);
-	    </script>
-	  </body>
+    </script>
+  </body>
 </html>

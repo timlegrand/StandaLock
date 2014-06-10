@@ -48,16 +48,12 @@
     
     // No design instruction provided, load defaults
     if (!design) {
-      var d = this._loadPredefinedDesign('defaultDualImage');
-      this._loadDesign(d);
-      return;
+      design = this._fetchDesign('defaultImage');
     }
 
     // Load predefined embedded design
     if (typeof design === 'string') {
-      var d = this._loadPredefinedDesign(design);
-      this._loadDesign(d);
-      return;
+      design = this._fetchDesign(design);
     }
 
     // At this point, design should be user-provided
@@ -65,6 +61,7 @@
       throw 'Problem loading user-provided design for "' + config.placeholderSelector + '".';
     }
 
+    // Load design
     this._drawLock      = design.drawLock;    // Bind user's function if any
     this._drawCursor    = design.drawCursor;  // Bind user's function if any
     this._width         = design.width;
@@ -76,19 +73,21 @@
     this._x_text        = design.x_text;
     this._y_text        = design.y_text;
 
-    if (!!design.image) { // Use picture instead of draw function
+    // Use picture instead of draw function
+    if (!!design.image) {
       this.img = new Image();
       this.img.src = design.image;
-      // Bind default draw to dual image mode, 
-      this._drawLock = this._drawDualImage; 
+      this._drawLock = this._drawDualImage; // Bind default draw to dual image mode
     }
-    if (!design.drawCursor) { // Use default cursor design
+
+    // Use default cursor design
+    if (!design.drawCursor) {
       this._drawCursor = this._drawDefaultCursor;
     }
   }
     
 
-    StandaLockClass.prototype._loadPredefinedDesign = function(design) {
+    StandaLockClass.prototype._fetchDesign = function(design) {
 
       function defaultLock(ctx, cursor_x) {
 
@@ -233,7 +232,7 @@
         case "defaultImage":
           return defaultDualImageDesign;
         default:
-          return "default";
+          return defaultDesign;
       }
 
     }
