@@ -19,7 +19,7 @@
     this.message = config.message;
     this.outputContainerSelector = config.outputPlaceholder;
     this.data = config.data;
-    this.decryptFn = config.decrypt;
+    this.decryptFn = config.decrypt || function(v){return v;};
     this.decryptUrl = config.decryptUrl;
 
     // Global state

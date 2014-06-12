@@ -20,7 +20,7 @@ How it works?
 
   2. Encrypt your personal information and prepare to provide a decrypt function. Remember that we are not fighting against humans but spambots, which search for particular patterns in clear text in a reasonable time. I personally use Base64 or ROT13 algorithms which seem to be enough. Make sure your information never appears in clear text. For an even better efficiency, try not to associate encrypted private information obvious variable names like "email" or "address" (tips provided in the next step).
 
-  3. Then it's time for StandaLock configuration:
+  3. Set it up:
 
      ```html
      <script src="/path/to/standalock.js"></script>
@@ -49,6 +49,13 @@ How it works?
      in the header (or footer, both ways work).
      Please have a look on the [documentation](#doc) for further details.
 
+What it does?
+---------------
+  * Keeps your personal information safe from spambots and other malicious harvesting techniques;
+  * Tells you if visitor is Human;
+  * Supports for custom designs, both image- or HTML-based, for better integration in your exixting pages.
+  * Handles everything that can be represented as plain text: email, address, images...
+
 Why a slidelock?
 ---------------
 Wondering about privacy and [spambot harvesting](http://en.wikipedia.org/wiki/Email_address_harvesting)? Many articles on the web are discussing about the best ways to protect personal information (PI) and prevent bots from using them for spam.
@@ -73,7 +80,7 @@ Why standalone?
   7. Embedding encrypted PI and decrypting it with Javascript at render time is useless since the rendered web page read by spambots will contain clear PI.
   8. So solution is to decrypt and render PI only if visitor is human, that is, if he manually unlocked the slide lock via GUI.
 
-This solution is in pure **client-side** Javascript, so no communication with server is required:
+This solution is in pure **client-side** Javascript, so no server implementation or communication is required:
 * runs on static websites such as Jekyll servers,
 * still runs if you loose network connection on your mobile,
 * don't wait for the server to respond, get unlocked information instantly!
