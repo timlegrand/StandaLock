@@ -138,6 +138,10 @@
 					},
 					format: '<img alt="Embedded image" src="{{image}}"></img>'
 				};
+				var config7 = {
+					message: 'And it also works without any placeholder...',
+					format: '<p><small>Then both StandaLock and output immediatelly precede the StandaLock &lt;script&gt; tag in the HTML :)</small></p>'
+				};
 				StandaLock
 					.add(config1)
 					.add(config2)
@@ -145,6 +149,7 @@
 					.add(config4)
 					.add(config5)
 					.add(config6)
+					.add(config7)
 					.render();
 			}
 			window.addEventListener('load', load, false);

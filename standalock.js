@@ -6,15 +6,14 @@
 
     this.checkCanvasSupport();
 
-    // Mandatory inputs
-    if (!config.placeholder) throw 'Missing placeholder.';
-    if (((!config.decrypt) && (!config.decryptUrl)) && ((!config.format) && (!config.data))) throw 'Missing decrypt method for "' + config.placeholderSelector + '".';
-    if (!config.format) throw 'Missing format for "' + config.placeholderSelector + '".';
-
-    this.placeholder = document.querySelector(config.placeholder);
-    this.placeholderSelector = config.placeholder;
-    this.format = config.format;
+    this.placeholderSelector = config.placeholder || 'script[src$="standalock.js"]';
+    this.placeholder = document.body.querySelector(this.placeholderSelector);
     
+    // Mandatory inputs
+    if (!config.format) throw 'Missing format for "' + this.placeholderSelector + '".';
+    this.format = config.format;    
+
+
     // Optional inputs
     this.message = config.message;
     this.outputContainerSelector = config.outputPlaceholder;
@@ -30,7 +29,6 @@
 
     // User implemented canvas and draw function (if any)
     this._loadDesign(config.design);
-
     this._sx = this._w * this._slider_value / 100;
   }
 
@@ -48,7 +46,7 @@
     
     // No design instruction provided, load defaults
     if (!design) {
-      design = this._fetchDesign('defaultImage');
+      design = this._fetchDesign('default');
     }
 
     // Load predefined embedded design
@@ -87,7 +85,7 @@
   }
     
 
-    StandaLockClass.prototype._fetchDesign = function(design) {
+    StandaLockClass.prototype._fetchDesign = function(designName) {
 
       function defaultLock(ctx, cursor_x) {
 
@@ -226,7 +224,7 @@
         y_text: 33 + 7
       }
 
-      switch (design) {
+      switch (designName) {
         case "default":
           return defaultDesign;
         case "defaultImage":
@@ -321,6 +319,10 @@
     }
 
     try{
+      // No placeholder given, place before configuration script by default
+      if (this.placeholder.nodeName === 'SCRIPT')
+        this.placeholder.parentNode.insertBefore(docfrag, this.placeholder);
+      else
       this.placeholder.appendChild(docfrag);
     }
     catch(e){

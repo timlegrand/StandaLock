@@ -18,9 +18,22 @@ How it works?
      <div id="contact"></div>
      ```
 
-  2. Encrypt your personal information and prepare to provide a decrypt function. Remember that we are not fighting against humans but spambots, which search for particular patterns in clear text in a reasonable time. I personally use Base64 or ROT13 algorithms which seem to be enough. Make sure your information never appears in clear text. For an even better efficiency, try not to associate encrypted private information obvious variable names like "email" or "address" (tips provided in the next step).
+  2. Encrypt your personal information and prepare to provide a decrypt function. Remember that we are not fighting against humans but spambots, which search for particular patterns in clear text in a reasonable time. Make sure your information never appears in clear text. For an even better efficiency, try not to associate encrypted private information obvious variable names like "email" or "address" (tips provided in the next step). The following is given as an example of a Base64 encoding and can be obtained at [this site](http://www.freeformatter.com/base64-encoder.html):
 
-  3. Set it up:
+```
+email address encoded in Base64: cHJpdmF0ZUBleGFtcGxlLmNvbQ==
+phone number encoded in Base64: MSg1NTUpNTU1LTU1NTU=
+```
+
+and prepare to provide the matching decrypt function:
+
+```javascript
+function(value) {
+  return window.atob(value);
+}
+```
+
+  3. Set it up in your HTML:
 
      ```html
      <script src="/path/to/standalock.js"></script>
@@ -46,7 +59,7 @@ How it works?
       window.addEventListener('load', load, false);
       </script>
      ```
-     in the header (or footer, both ways work).
+     You can place this in the header of your page (or footer, both ways work) if you use placeholders.
      Please have a look on the [documentation](#doc) for further details.
 
 What it does?
