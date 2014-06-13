@@ -20,18 +20,18 @@ How it works?
 
   2. Encrypt your personal information and prepare to provide a decrypt function. Remember that we are not fighting against humans but spambots, which search for particular patterns in clear text in a reasonable time. Make sure your information never appears in clear text. For an even better efficiency, try not to associate encrypted private information obvious variable names like "email" or "address" (tips provided in the next step). The following is given as an example of a Base64 encoding and can be obtained at [this site](http://www.freeformatter.com/base64-encoder.html):
 
-```
-email address encoded in Base64: cHJpdmF0ZUBleGFtcGxlLmNvbQ==
-phone number encoded in Base64: MSg1NTUpNTU1LTU1NTU=
-```
+    ```
+    email address encoded in Base64: cHJpdmF0ZUBleGFtcGxlLmNvbQ==
+    phone number encoded in Base64: MSg1NTUpNTU1LTU1NTU=
+    ```
 
-and prepare to provide the matching decrypt function:
+    and prepare to provide the matching decrypt function:
 
-```javascript
-function(value) {
-  return window.atob(value);
-}
-```
+    ```javascript
+    function(value) {
+      return window.atob(value);
+    }
+    ```
 
   3. Set it up in your HTML:
 
