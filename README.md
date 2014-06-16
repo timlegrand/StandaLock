@@ -1,3 +1,5 @@
+![StandaLock logo](http://timlegrand.github.io/assets/images/StandaLock-logo.gif)
+
 StandaLock
 ==========
 A standalone slide bar that your visitors unlock using _drag and drop_ to prevent spambots for harvesting sensitive, private information stored in your web pages such as email address and phone number.
