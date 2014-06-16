@@ -1,4 +1,4 @@
-![StandaLock logo](http://timlegrand.github.io/assets/images/StandaLock-logo.gif)
+![StandaLock logo](http://timlegrand.github.io/assets/images/StandaLock-logo.png)
 
 StandaLock
 ==========
