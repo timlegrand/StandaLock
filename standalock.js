@@ -16,7 +16,7 @@
 
     // Optional inputs
     this.message = config.message;
-    this.outputContainerSelector = config.outputanchor;
+    this.outputContainerSelector = config.outputAnchor;
     this.data = config.data;
     this.decryptFn = config.decrypt || function(v){return v;};
     this.decryptUrl = config.decryptUrl;
