@@ -8,7 +8,7 @@ A standalone slide bar that your visitors unlock using _drag and drop_ to preven
 
 How it works?
 ---------------
-  1. Add a placeholder for the StandaLock in your HTML:
+  1. Add an anchor for the StandaLock in your HTML:
 
      ```html
      <div id="mystandalock"></div>
@@ -43,7 +43,7 @@ How it works?
       function load(){
         var config1 = {
           message: 'Slide to unlock contact info',
-          placeholder: '#mystandalock',
+          anchor: '#mystandalock',
           data: {
             m-a-i-l: 'cHJpdmF0ZUBleGFtcGxlLmNvbQ==',
             t-e-l: 'MSg1NTUpNTU1LTU1NTU='
@@ -61,7 +61,7 @@ How it works?
       window.addEventListener('load', load, false);
       </script>
      ```
-     You can place this in the header of your page (or footer, both ways work) if you use placeholders.
+     You can place this in the header of your page (or footer, both ways work) if you use anchors.
      Please have a look on the [documentation](#doc) for further details.
 
 What it does?
@@ -85,17 +85,17 @@ In addition, these countermeasures support clickable email links (which cannot b
 Why standalone?
 ---------------
   5. It turns out that every slidelock found on the web is based on a client-server model implying various handshakes that end with the retrieval of PI from the server. But what if you cannot ask the server? What if the server cannot run PHP or Python? Today many websites are static-pages servers (Harp, Jekyll, etc.) as for GitHub.io. In these cases such slidelocks won't work.
-  6. Spambots can read Javascipt. So writing
+  6. Spambots can read JavaScript. So writing
 
      ```javascript
      my_email = "personal@example.com";
      document.getElementById('my_contact_div').innerHTML = '<p>' + my_email + '</p>';
      ```
      will not work either since the spambot can clearly read the line `my_email = "personal@example.com";`.
-  7. Embedding encrypted PI and decrypting it with Javascript at render time is useless since the rendered web page read by spambots will contain clear PI.
+  7. Embedding encrypted PI and decrypting it with JavaScript at render time is useless since the rendered web page read by spambots will contain clear PI.
   8. So solution is to decrypt and render PI only if visitor is human, that is, if he manually unlocked the slide lock via GUI.
 
-This solution is in pure **client-side** Javascript, so no server implementation or communication is required:
+This solution is in pure **client-side** JavaScript, so no server implementation or communication is required:
 * runs on static websites such as Jekyll servers,
 * still runs if you loose network connection on your mobile,
 * don't wait for the server to respond, get unlocked information instantly!
@@ -109,7 +109,7 @@ See [wiki pages](https://github.com/timlegrand/StandaLock/wiki) for complete doc
 
 Limitations
 -----------
-At this time it is not possible to bind several output placeholders to the same StandaLock. It will be solved in further releases.
+At this time it is not possible to bind several output anchors to the same StandaLock. It will be solved in further releases.
 
 License
 -------

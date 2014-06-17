@@ -78,7 +78,7 @@
 			function load(){
 				var config1 = {
 					message: 'Slide to unlock contact info',
-					placeholder: '#standalock-1',
+					anchor: '#standalock-1',
 					data: {
 						mailto: 'cHJpdmF0ZUBleGFtcGxlLmNvbQ==',
 						tel: 'MSg1NTUpNTU1LTU1NTU='
@@ -91,8 +91,8 @@
 
 				var config2 = {
 					message: 'Unlock and look for the output at the corner',
-					placeholder: '#standalock-2',
-					outputPlaceholder: '#putdatahere',
+					anchor: '#standalock-2',
+					outputanchor: '#putdatahere',
 					data: {
 						mailto: 'cHJpdmF0ZUBleGFtcGxlLmNvbQ==',
 						tel: 'MSg1NTUpNTU1LTU1NTU='
@@ -104,11 +104,11 @@
 				};
 				var config3 = {
 					message: 'Slide to unlock a submit button',
-					placeholder: '#standalock-3',
+					anchor: '#standalock-3',
 					format: '<p><button onclick="alert(\'DONE\')">Click me</button></p>'
 				};
 				var config4 = {
-					placeholder: '#standalock-4',
+					anchor: '#standalock-4',
 					message: 'Slide to decrypt from a remote server',
 					data: {
 						mailto: "AC:G2E6o6I2>A=6]4@>", // ROT47
@@ -119,7 +119,7 @@
 				};
 				var config5 = {
 					message: "Hey! It's my own design!",
-					placeholder: '#standalock-5',
+					anchor: '#standalock-5',
 					data: {
 						mailto: 'cHJpdmF0ZUBleGFtcGxlLmNvbQ==',
 						tel: 'MSg1NTUpNTU1LTU1NTU='
@@ -132,14 +132,14 @@
 				};
 				var config6 = {
 					message: 'Slide to unlock a picture (SFW)',
-					placeholder: '#standalock-6',
+					anchor: '#standalock-6',
 					data: {
 						image: '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'
 					},
 					format: '<img alt="Embedded image" src="data:image/gif;base64,{{image}}"></img>'
 				};
 				var config7 = {
-					message: 'And it also works without any placeholder...',
+					message: 'And it also works without any anchor...',
 					format: '<p><small>Then both StandaLock and output immediatelly precede the StandaLock &lt;script&gt; tag in the HTML :)</small></p>'
 				};
 				StandaLock

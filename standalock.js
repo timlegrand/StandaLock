@@ -6,17 +6,17 @@
 
     this.checkCanvasSupport();
 
-    this.placeholderSelector = config.placeholder || 'script[src$="standalock.js"]';
-    this.placeholder = document.body.querySelector(this.placeholderSelector);
+    this.anchorSelector = config.anchor || 'script[src$="standalock.js"]';
+    this.anchor = document.body.querySelector(this.anchorSelector);
     
     // Mandatory inputs
-    if (!config.format) throw 'Missing format for "' + this.placeholderSelector + '".';
+    if (!config.format) throw 'Missing format for "' + this.anchorSelector + '".';
     this.format = config.format;    
 
 
     // Optional inputs
     this.message = config.message;
-    this.outputContainerSelector = config.outputPlaceholder;
+    this.outputContainerSelector = config.outputanchor;
     this.data = config.data;
     this.decryptFn = config.decrypt || function(v){return v;};
     this.decryptUrl = config.decryptUrl;
@@ -56,7 +56,7 @@
 
     // At this point, design should be user-provided
     if (typeof design !== 'object') {
-      throw 'Problem loading user-provided design for "' + config.placeholderSelector + '".';
+      throw 'Problem loading user-provided design for "' + config.anchorSelector + '".';
     }
 
     // Load design
@@ -245,7 +245,7 @@
       this._drawText();
     }
     catch (e) {
-      console.debug("Draw error on " + this.placeholderSelector);
+      console.debug("Draw error on " + this.anchorSelector);
       throw e;
     }
 
@@ -319,14 +319,14 @@
     }
 
     try{
-      // No placeholder given, place before configuration script by default
-      if (this.placeholder.nodeName === 'SCRIPT')
-        this.placeholder.parentNode.insertBefore(docfrag, this.placeholder);
+      // No anchor given, place before configuration script by default
+      if (this.anchor.nodeName === 'SCRIPT')
+        this.anchor.parentNode.insertBefore(docfrag, this.anchor);
       else
-      this.placeholder.appendChild(docfrag);
+      this.anchor.appendChild(docfrag);
     }
     catch(e){
-      throw 'Can not find element ' + this.placeholderSelector;
+      throw 'Can not find element ' + this.anchorSelector;
     }
 
     // Draw canvas!
