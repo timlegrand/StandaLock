@@ -30,12 +30,13 @@
 		<div id="standalock-4"></div>
 		<div id="standalock-5"></div>
 		<div id="standalock-6"></div>
+		<div id="standalock-8"></div>
 		<script src="./standalock.js"></script>
 		<script type="text/javascript" charset="utf-8">
 			function sampleLock(ctx, cursor_x) {
-		    // Lock
-		    var x = 5, y = 5, w = 390, h = 40;		    
-		    ctx.beginPath();
+			    // Lock
+			    var x = 5, y = 5, w = 390, h = 40;		    
+			    ctx.beginPath();
 				ctx.rect(x, y, w, h);
 				ctx.fillStyle = "CornflowerBlue";
 				ctx.fill();
@@ -46,8 +47,8 @@
 				// Filled slide bar
 				var x = 10, y = 10, w = 380, h = 30;
 				ctx.beginPath();
-		    ctx.rect(x, y, cursor_x, h);
-		    ctx.fillStyle = "CadetBlue";
+			    ctx.rect(x, y, cursor_x, h);
+			    ctx.fillStyle = "CadetBlue";
 				ctx.fill();
 			};
 
@@ -58,20 +59,20 @@
 			    ctx.fillStyle = "LightSteelBlue";
 			    ctx.fill();
 
-			    this._x_text = cursor_x -10;	// Wow! 'this' refers to the StandaLock itslef!
+			    this._x_text = cursor_x -10;  // Wow! 'this' refers to the StandaLock itslef!
 			};
 
 			var sampleUserDesign = { 
 				drawLock: sampleLock,
 				drawCursor: sampleCursor,
-		    width: 400,
-		    height: 50,
-		    cursor_radius: 15,
-		    x1: 10 + 15,  // X position where the cursor starts
-		    w: 400 - 30 - 2*10,  // sliding course
-		    y: 25,  // Y position of center of the cursor
-		    x_text: 10,  // X position where to write text
-		    y_text: 35  // Y position where to write text
+			    width: 400,
+			    height: 50,
+			    cursor_radius: 15,
+			    x1: 10 + 15,  // X position where the cursor starts
+			    w: 350,  // sliding course
+			    y: 25,  // Y position of center of the cursor
+			    x_text: 10,  // X position where to write text
+			    y_text: 35,  // Y position where to write text
 			};
 		</script>
 		<script type="text/javascript" charset="utf-8">
@@ -84,11 +85,10 @@
 						tel: 'MSg1NTUpNTU1LTU1NTU='
 					},
 					decrypt: function(value) {
-			    	return window.atob(value);
-			  	},
+				    	return window.atob(value);
+				  	},
 					format: '<p><a href="mailto:{{mailto}}">{{mailto}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="tel:{{tel}}">{{tel}}</a></p>'
 				};
-
 				var config2 = {
 					message: 'Unlock and look for the output at the corner',
 					anchor: '#standalock-2',
@@ -98,8 +98,8 @@
 						tel: 'MSg1NTUpNTU1LTU1NTU='
 					},
 					decrypt: function(value) {
-			    	return window.atob(value);
-			  	},
+			    		return window.atob(value);
+			  		},
 					format: '<p><a href="mailto:{{mailto}}">{{mailto}}</a><br/><a href="tel:{{tel}}">{{tel}}</a></p>'
 				};
 				var config3 = {
@@ -125,8 +125,8 @@
 						tel: 'MSg1NTUpNTU1LTU1NTU='
 					},
 					decrypt: function(value) {
-				    return window.atob(value);
-				  },
+				    	return window.atob(value);
+				  	},
 					format: "<p>Ok, this one is totally ugly :/<br/>But it's up to you to make a better design!<br/>Let's dive into <a href='http://www.w3schools.com/html/html5_canvas.asp'>the world of HTML5 Canvas</a>!</p>",
 					design: sampleUserDesign
 				};
@@ -142,6 +142,12 @@
 					message: 'And it also works without any anchor...',
 					format: '<p><small>Then both StandaLock and output immediatelly precede the StandaLock &lt;script&gt; tag in the HTML :)</small></p>'
 				};
+				var config8 = {
+					message: 'There are also polished designs included, check\'em out!',
+					anchor: '#standalock-8',
+					format: '<p>2014 Adobe style!</p>',
+					design: 'adobe'
+				};
 				StandaLock
 					.add(config1)
 					.add(config2)
@@ -150,6 +156,7 @@
 					.add(config5)
 					.add(config6)
 					.add(config7)
+					.add(config8)
 					.render();
 			}
 			window.addEventListener('load', load, false);

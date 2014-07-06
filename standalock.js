@@ -70,6 +70,9 @@
     this._y             = design.y;
     this._x_text        = design.x_text;
     this._y_text        = design.y_text;
+    this._font          = design.font;
+    this._fontColor     = design.fontColor;
+    this._textAlign     = design.textAlign;
 
     // Use picture instead of draw function
     if (!!design.image) {
@@ -86,23 +89,23 @@
     
 
     StandaLockClass.prototype._fetchDesign = function(designName) {
+        
+      // Helper function to create rounded rectangles
+      CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+        if (w < 2 * r) r = w / 2;
+        if (h < 2 * r) r = h / 2;
+        this.beginPath();
+        this.moveTo(x+r, y);
+        this.arcTo(x+w, y,   x+w, y+h, r);
+        this.arcTo(x+w, y+h, x,   y+h, r);
+        this.arcTo(x,   y+h, x,   y,   r);
+        this.arcTo(x,   y,   x+w, y,   r);
+        this.closePath();
+        return this;
+      }
 
       function defaultLock(ctx, cursor_x) {
-
-        // Helper function to create rounded rectangles
-        CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
-          if (w < 2 * r) r = w / 2;
-          if (h < 2 * r) r = h / 2;
-          this.beginPath();
-          this.moveTo(x+r, y);
-          this.arcTo(x+w, y,   x+w, y+h, r);
-          this.arcTo(x+w, y+h, x,   y+h, r);
-          this.arcTo(x,   y+h, x,   y,   r);
-          this.arcTo(x,   y,   x+w, y,   r);
-          this.closePath();
-          return this;
-        }
-
+        
         // Lock
         var x = 10, y = 0, w = 443, h = 50, r = 40;
         var border = ctx.createLinearGradient(x, y, x, y+h);
@@ -158,16 +161,6 @@
         ctx.fillStyle = radgrad;
         var slidebar = ctx.roundRect(x, y, cursor_x-x, h, r);
         slidebar.fill();
-/*
-        ctx.globalCompositeOperation = "overlay"; // Add G.I.
-        ctx.beginPath();
-        if (cursor_x > x+w/4-1) ctx.rect(x+w/4-1, y, 1, h);
-        if (cursor_x > x+2*w/4-1) ctx.rect(x+2*w/4-1, y, 1, h);
-        if (cursor_x > x+3*w/4-1) ctx.rect(x+3*w/4-1, y, 1, h);
-        ctx.fillStyle = "white";
-        slidebar.fill();
-        ctx.globalCompositeOperation = "source-over";*/
-
       };
 
       function defaultCursor(ctx, cursor_x) {
@@ -224,7 +217,84 @@
         y_text: 33 + 7
       }
 
+      function adobeLock(ctx, cursor_x) {
+        // Background
+        var x = 0, y = 0, w = 416, h = 88;        
+        ctx.beginPath();
+        ctx.rect(x, y, w, h);
+        ctx.fillStyle = 'hsl(0, 0%, 30%)';
+        ctx.fill();
+
+        // Lock
+        var x = 20, y = 22, w = 376, h = 30;        
+        ctx.beginPath();
+        ctx.rect(x, y, w, h);
+        // ctx.fillStyle = 'hsl(0, 0%, 18%)';
+        var grad = ctx.createLinearGradient(21, 23, 21, y+h);
+        grad.addColorStop(0, 'rgb(33, 33, 33)');
+        grad.addColorStop(0.1, 'rgb(49, 49, 49)');
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.lineWidth = 0.3;
+        ctx.strokeStyle = "black";
+        ctx.stroke();
+
+        // Filled slide bar
+        if (cursor_x > 22)
+        {
+          var x = 21, y = 23, w = 376, h = 28;
+          ctx.beginPath();
+          ctx.rect(x, y, cursor_x-x-1, h);
+          var grad = ctx.createLinearGradient(21, 23, 21, y+h);
+          grad.addColorStop(0, 'rgb(102, 163, 226)');
+          grad.addColorStop(0.49, 'rgb(86, 139, 192)');
+          grad.addColorStop(0.51, 'rgb(75, 121, 175)');
+          grad.addColorStop(1, 'rgb(56, 93, 135)');
+          ctx.fillStyle = grad;
+          ctx.fill();
+          
+          // Add border highlight
+          ctx.lineWidth = 1;
+          ctx.globalCompositeOperation = "lighter"; // Push         
+          ctx.strokeStyle = 'hsl(133, 0%, 15%)';
+          ctx.stroke(); 
+          ctx.globalCompositeOperation = "source-over"; // Pop
+        }
+            
+      };
+
+      function adobeCursor(ctx, cursor_x) {
+        if (cursor_x >= 32) return;
+
+        // Draw an arrow
+        ctx.beginPath();
+        ctx.moveTo(16,37);
+        ctx.lineTo(10,43);
+        ctx.lineTo(10,31);
+        ctx.closePath();
+        ctx.fillStyle = 'hsl(0, 0%, 40%)';
+        ctx.fill();
+      };
+
+      var adobe = { 
+        drawLock: adobeLock,
+        drawCursor: adobeCursor,
+          width: 416,
+          height: 88,
+          cursor_radius: 10,
+          x1: 20,  // X position where the cursor starts
+          w: 376,  // sliding course
+          y: 37,  // Y position of center of the cursor
+          x_text: 396,  // X position where to write text
+          y_text: 70,  // Y position where to write text
+          font: '8pt Arial',
+          fontColor: 'rgb(255, 255, 255)',
+          textAlign: 'right'
+      };
+
       switch (designName) {
+        case "adobe":
+          return adobe;
         case "default":
           return defaultDesign;
         case "defaultImage":
@@ -273,22 +343,24 @@
   StandaLockClass.prototype._drawText = function() {
     var text = '';
     if (this._passed === true) {
-      this.ctx.font = "18pt Arial";
+      this.ctx.font = this._font || "18pt Arial";
       if (this._unlockError === false) {
-        this.ctx.fillStyle = "#66BB00";
+        this.ctx.fillStyle = this._fontColor || "#66BB00";
         text = "✔";
       }
       else {
-        this.ctx.fillStyle = "#AA0000";
+        this.ctx.fillStyle = this._fontColor || "#AA0000";
         text = "✘";
       }
     }
     else
     {
-      this.ctx.font = "14pt Arial";
-      this.ctx.fillStyle = "grey";
+      this.ctx.font = this._font || "14pt Arial";
+      this.ctx.fillStyle = this._fontColor || "grey";
       text = Math.round(this._slider_value) + " %";
     }
+
+    this.ctx.textAlign = this._textAlign || 'left';
     this.ctx.fillText(text, this._x_text, this._y_text);
   }
 
